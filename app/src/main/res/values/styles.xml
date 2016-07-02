@@ -9,4 +9,15 @@
         <item name="android:windowBackground">@color/white</item>
     </style>
 
+    <style name="homeTheme" parent="AppTheme">
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowExitTransition">@transition/slide_bottom_to_up</item>
+    </style>
+
+    <style name="editTheme" parent="AppTheme">
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/slide_bottom_to_up</item>
+        <item name="android:windowExitTransition">@transition/slide_up_to_bottom</item>
+    </style>
+
 </resources>
