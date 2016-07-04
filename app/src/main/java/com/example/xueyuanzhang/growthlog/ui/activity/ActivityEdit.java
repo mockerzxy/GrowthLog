@@ -1,9 +1,11 @@
 package com.example.xueyuanzhang.growthlog.ui.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,8 +15,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
@@ -23,10 +27,13 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.xueyuanzhang.growthlog.R;
+import com.example.xueyuanzhang.growthlog.util.LocalDataBaseHelper;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -54,12 +61,14 @@ public class ActivityEdit extends AppCompatActivity {
     Toolbar toolbar;
 
     private List<ImageView> imageViewList = new ArrayList<>();
+    private LocalDataBaseHelper dbHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
         initView();
+        dbHelper = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 2);
         relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,7 +103,8 @@ public class ActivityEdit extends AppCompatActivity {
         ButterKnife.bind(this);
         initToolbar();
     }
-    private void initToolbar(){
+
+    private void initToolbar() {
         toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
         toolbar.setTitle("Record");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -104,6 +114,21 @@ public class ActivityEdit extends AppCompatActivity {
             }
         });
         toolbar.inflateMenu(R.menu.menu_edit);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.send) {
+                    Log.i("merge", mergePicPath());
+                    ProgressDialog dialog = ProgressDialog.show(ActivityEdit.this, "", "正在记录，请稍后", true);
+                    insertData(dbHelper.getReadableDatabase(), editText.getText().toString(), mergePicPath(), getTime());
+                    dialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "记录成功", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                return true;
+            }
+        });
     }
 
     @Override
@@ -142,14 +167,14 @@ public class ActivityEdit extends AppCompatActivity {
                     imageView.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            for (int i=0;i<imageViewList.size();i++) {
+                            for (int i = 0; i < imageViewList.size(); i++) {
                                 ImageView view = imageViewList.get(i);
                                 view.setTag(i);
                             }
                             Log.i("picNUM", v.getTag() + "");
                             v.setVisibility(View.GONE);
                             imageViewHolder.removeView(v);
-                            imageViewList.remove((int)v.getTag());
+                            imageViewList.remove((int) v.getTag());
                             picPath.remove((int) v.getTag());
 
                             return true;
@@ -167,5 +192,27 @@ public class ActivityEdit extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private void insertData(SQLiteDatabase db, String text, String imagePath, String timeStamp) {
+        db.execSQL("insert into GrowthLog values(null , ? , ? , ?)", new String[]{text, imagePath,timeStamp});
+    }
+
+    private String mergePicPath() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < picPath.size(); i++) {
+            String url = picPath.get(i);
+            stringBuilder.append(url);
+            if (i != picPath.size() - 1) {
+                stringBuilder.append(",");
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private String getTime() {
+        Calendar calendar = new GregorianCalendar();
+        String timeStamp = calendar.getTime().toString();
+        return timeStamp;
     }
 }
