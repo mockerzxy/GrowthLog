@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:minHeight="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.Light" />
+
+
+
+        <LinearLayout
+            android:id="@+id/container_of_detail_page"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@id/toolbar"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_marginBottom="16dp"
+                android:transitionName="textContent"
+                tools:text="今天有点嗨" />
+
+            <ViewStub
+                android:id="@+id/imageStub_type1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inflatedId="@+id/stubInflateId1"
+                android:layout="@layout/stub_imagenum_type1" />
+
+            <ViewStub
+                android:id="@+id/imageStub_type2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inflatedId="@+id/stubInflateId2"
+                android:layout="@layout/stub_imagenum_type2" />
+
+            <ViewStub
+                android:id="@+id/imageStub_type3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inflatedId="@+id/stubInflateId3"
+                android:layout="@layout/stub_imagenum_type3" />
+
+
+        </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/editButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="normal"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_mode_edit_black_24dp"
+        app:layout_behavior="com.example.xueyuanzhang.growthlog.ui.util.FabScrollBehavior"
+        android:elevation="4dp"
+        android:layout_marginEnd="16dp"/>
+
+
+</RelativeLayout>

@@ -5,4 +5,5 @@
     <color name="colorAccent">#009688</color>
     <color name="backgroundColor">#FAFAFA</color>
     <color name="white">#FFFFFF</color>
+    <color name="shareButtonColor">#d5d5d5</color>
 </resources>

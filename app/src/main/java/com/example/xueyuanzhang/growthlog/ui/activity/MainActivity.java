@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.daimajia.swipe.SwipeLayout;
 import com.example.xueyuanzhang.growthlog.R;
 import com.example.xueyuanzhang.growthlog.model.ListEntry;
 import com.example.xueyuanzhang.growthlog.model.Record;
@@ -27,11 +29,9 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.holder.BadgeStyle;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.ArrayList;
@@ -50,12 +50,18 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.swipe_container)
     SwipeRefreshLayout swipeRefreshLayout;
 
+    private final static int EDIT_NEW_DIARY=1;
+
     private LocalDataBaseHelper dbHelper;
     private Drawer drawer;
     private AccountHeader headerView;
     private List<Record> recordList = new ArrayList<>();
     private List<ListEntry> parentList = new ArrayList<>();
     private RecordListAdapter adapter;
+
+
+
+    private Paint p = new Paint();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ActivityEdit.class);
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                startActivityForResult(intent,EDIT_NEW_DIARY, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
             }
         });
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -80,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+
 
     }
 
@@ -118,10 +125,116 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         adapter = new RecordListAdapter(parentList, this);
+        adapter.setSwipeListener(new SwipeLayout.SwipeListener() {
+            @Override
+            public void onStartOpen(SwipeLayout layout) {
+
+            }
+
+            @Override
+            public void onOpen(SwipeLayout layout) {
+
+            }
+
+            @Override
+            public void onStartClose(SwipeLayout layout) {
+
+            }
+
+            @Override
+            public void onClose(SwipeLayout layout) {
+
+            }
+
+            @Override
+            public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
+
+            }
+
+            @Override
+            public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
+
+            }
+        });
+        adapter.setOnDeleteListener(new RecordListAdapter.OnDeleteListener() {
+            @Override
+            public void onDelete(int id) {
+                deleteItemData(dbHelper.getReadableDatabase(),id);
+            }
+        });
+        adapter.setOnShowDetailListener(new RecordListAdapter.OnShowDetailListener() {
+            @Override
+            public void onDetail(int id) {
+                Intent intent = new Intent(MainActivity.this,ActivityDetail.class);
+                intent.putExtra("diary_id",id);
+                startActivity(intent);
+            }
+        });
+        adapter.setOnClickImageListener(new RecordListAdapter.OnClickImageListener() {
+            @Override
+            public void onClick(int position, List<String> picList) {
+                Intent intent = new Intent(MainActivity.this,ActivityImageFlipper.class);
+                ArrayList<String> pic_list = (ArrayList<String>) picList;
+                intent.putStringArrayListExtra("PIC_LIST",pic_list);
+                intent.putExtra("POSITION",position);
+                startActivity(intent);
+            }
+        });
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager lm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(lm);
         recyclerView.setAdapter(adapter);
+
+//        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0,
+//                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+//            public int flag;
+//
+//            @Override
+//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+//                deleteItemData(dbHelper.getReadableDatabase(), viewHolder.getAdapterPosition());
+//
+//            }
+//
+//            @Override
+//            public boolean isItemViewSwipeEnabled() {
+//
+//                return super.isItemViewSwipeEnabled();
+//            }
+//
+//
+//
+//
+//            @Override
+//            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+////                Bitmap deleteIcon = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.drawable.ic_delete_black_24dp);
+//                Bitmap icon;
+//                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+//                    View itemView = viewHolder.itemView;
+//                    float height = (float) itemView.getBottom() - (float) itemView.getTop();
+//                    float width = height / 3;
+//                    if (dX < 0) {
+//                        p.setColor(Color.parseColor("#D32F2F"));
+//                        RectF background = new RectF((float) itemView.getRight()+dX, (float) itemView.getTop(),(float) itemView.getRight(), (float) itemView.getBottom());
+//                        c.drawRect(background,p);
+//                        icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_delete_black_24dp);
+//                        RectF icon_dest = new RectF((float) itemView.getRight() - 2*width ,(float) itemView.getTop() + width,(float) itemView.getRight() - width,(float)itemView.getBottom() - width);
+//                        if(icon!=null) {
+//                            c.drawBitmap(icon, null, icon_dest, p);
+//                        }
+//                    }
+//                }
+//                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+//            }
+//
+//        };
+//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+//        itemTouchHelper.attachToRecyclerView(recyclerView);
+
     }
 
     private void initAccountHeader() {
@@ -156,22 +269,46 @@ public class MainActivity extends AppCompatActivity {
                 timeEntity.setTime(cursor.getString(3));
                 parentList.add(timeEntity);
 
-            } else if (!TimeUtil.formatTime(recordList.get(recordList.size() - 1).getTime()).equals(TimeUtil.formatTime(record.getTime()))) {
+            } else if (!TimeUtil.formatTimeInRough(recordList.get(recordList.size() - 1).getTime()).equals(TimeUtil.formatTimeInRough(record.getTime()))) {
                 TimeEntity timeEntity = new TimeEntity();
                 timeEntity.setTime(cursor.getString(3));
                 parentList.add(timeEntity);
             }
-                parentList.add(record);
-                recordList.add(record);
+            parentList.add(record);
+            recordList.add(record);
 
         }
         cursor.close();
 
     }
 
-    private void deleteAllData(SQLiteDatabase db){
+    private void deleteAllData(SQLiteDatabase db) {
         db.execSQL("delete from GrowthLog");
     }
 
+    private void deleteItemData(SQLiteDatabase db, int id) {
+        int position = 0;
+        db.execSQL("delete from GrowthLog where _id = " + id);
+        for(int i=0;i<parentList.size();i++){
+            if(parentList.get(i) instanceof Record){
+               Record record = (Record)parentList.get(i);
+                if(record.getId()==id){
+                    position = i;
+                }
+            }
+        }
+        parentList.remove(position);
+        adapter.notifyItemRemoved(position);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){
+            if(requestCode==EDIT_NEW_DIARY){
+                queryAllData(dbHelper.getReadableDatabase());
+                adapter.notifyDataSetChanged();
+            }
+        }
+    }
 }

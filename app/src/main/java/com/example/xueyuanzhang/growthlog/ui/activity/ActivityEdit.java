@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.xueyuanzhang.growthlog.R;
+import com.example.xueyuanzhang.growthlog.model.Record;
 import com.example.xueyuanzhang.growthlog.util.LocalDataBaseHelper;
 import com.squareup.picasso.Picasso;
 
@@ -62,6 +63,8 @@ public class ActivityEdit extends AppCompatActivity {
 
     private List<ImageView> imageViewList = new ArrayList<>();
     private LocalDataBaseHelper dbHelper;
+    private Record record;
+    private int ifModify;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,6 +105,59 @@ public class ActivityEdit extends AppCompatActivity {
     private void initView() {
         ButterKnife.bind(this);
         initToolbar();
+        ifModify = getIntent().getIntExtra("ID",0);
+        if(ifModify!=0){
+            initModifyView();
+        }
+    }
+    private void initModifyView(){
+        record = new Record();
+        record.setId(getIntent().getIntExtra("ID",0));
+        if(getIntent().getStringExtra("TEXT")!=null){
+            record.setText(getIntent().getStringExtra("TEXT"));
+        }
+        if(getIntent().getStringArrayListExtra("PIC_LIST")!=null){
+            record.setPicList(getIntent().getStringArrayListExtra("PIC_LIST"));
+        }
+        editText.setText(record.getText());
+        picPath.addAll(record.getPicList());
+        addImageToHolder(false);
+
+    }
+
+    private void addImageToHolder(boolean ifAddOne){
+        for(int i=0;i<picPath.size();i++) {
+            ImageView imageView = (ImageView) LayoutInflater.from(this).inflate(R.layout.view_imageitem, imageViewHolder, false);
+            File file;
+            if(ifAddOne){
+                file  = new File(picPath.get(picPath.size()-1));
+            }
+            else {
+                file = new File(picPath.get(i));
+            }
+            Picasso.with(this).load(file).resize(300, 300).centerCrop().into(imageView);
+            imageViewHolder.addView(imageView);
+            imageViewList.add(imageView);
+            imageView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    for (int i = 0; i < imageViewList.size(); i++) {
+                        ImageView view = imageViewList.get(i);
+                        view.setTag(i);
+                    }
+                    Log.i("picNUM", v.getTag() + "");
+                    v.setVisibility(View.GONE);
+                    imageViewHolder.removeView(v);
+                    imageViewList.remove((int) v.getTag());
+                    picPath.remove((int) v.getTag());
+
+                    return true;
+                }
+            });
+            if(ifAddOne){
+                break;
+            }
+        }
     }
 
     private void initToolbar() {
@@ -121,10 +177,15 @@ public class ActivityEdit extends AppCompatActivity {
                 if (id == R.id.send) {
                     Log.i("merge", mergePicPath());
                     ProgressDialog dialog = ProgressDialog.show(ActivityEdit.this, "", "正在记录，请稍后", true);
-                    insertData(dbHelper.getReadableDatabase(), editText.getText().toString(), mergePicPath(), getTime());
+                    if(ifModify==0) {
+                        insertData(dbHelper.getReadableDatabase(), editText.getText().toString(), mergePicPath(), getTime());
+                    }else{
+                        modifyData(dbHelper.getReadableDatabase(),record.getId(),editText.getText().toString(),mergePicPath(),getTime());
+                    }
                     dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "记录成功", Toast.LENGTH_SHORT).show();
-                    finish();
+                    ActivityEdit.this.setResult(RESULT_OK);
+                    ActivityEdit.this.finish();
                 }
                 return true;
             }
@@ -159,28 +220,28 @@ public class ActivityEdit extends AppCompatActivity {
                         }
                     }
                     Log.i("imageTag", picPath.get(picPath.size() - 1));
-                    final ImageView imageView = (ImageView) LayoutInflater.from(this).inflate(R.layout.view_imageitem, imageViewHolder, false);
-                    File file = new File(picPath.get(picPath.size() - 1));
-                    Picasso.with(this).load(file).resize(300, 300).centerCrop().into(imageView);
-                    imageViewHolder.addView(imageView);
-                    imageView.setTag(picPath.size() - 1);
-                    imageView.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            for (int i = 0; i < imageViewList.size(); i++) {
-                                ImageView view = imageViewList.get(i);
-                                view.setTag(i);
-                            }
-                            Log.i("picNUM", v.getTag() + "");
-                            v.setVisibility(View.GONE);
-                            imageViewHolder.removeView(v);
-                            imageViewList.remove((int) v.getTag());
-                            picPath.remove((int) v.getTag());
-
-                            return true;
-                        }
-                    });
-                    imageViewList.add(imageView);
+                    addImageToHolder(true);
+//                    final ImageView imageView = (ImageView) LayoutInflater.from(this).inflate(R.layout.view_imageitem, imageViewHolder, false);
+//                    File file = new File(picPath.get(picPath.size() - 1));
+//                    Picasso.with(this).load(file).resize(300, 300).centerCrop().into(imageView);
+//                    imageViewHolder.addView(imageView);
+//                    imageView.setOnLongClickListener(new View.OnLongClickListener() {
+//                        @Override
+//                        public boolean onLongClick(View v) {
+//                            for (int i = 0; i < imageViewList.size(); i++) {
+//                                ImageView view = imageViewList.get(i);
+//                                view.setTag(i);
+//                            }
+//                            Log.i("picNUM", v.getTag() + "");
+//                            v.setVisibility(View.GONE);
+//                            imageViewHolder.removeView(v);
+//                            imageViewList.remove((int) v.getTag());
+//                            picPath.remove((int) v.getTag());
+//
+//                            return true;
+//                        }
+//                    });
+//                    imageViewList.add(imageView);
                 }
 
             }
@@ -198,13 +259,17 @@ public class ActivityEdit extends AppCompatActivity {
         db.execSQL("insert into GrowthLog values(null , ? , ? , ?)", new String[]{text, imagePath,timeStamp});
     }
 
+    private void modifyData(SQLiteDatabase db,int id,String text,String imagePath,String timeStamp){
+        db.execSQL("update GrowthLog set text = '"+text+"', image = '"+imagePath+"', time = '"+timeStamp+"' where _id = "+id);
+    }
+
     private String mergePicPath() {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < picPath.size(); i++) {
             String url = picPath.get(i);
             stringBuilder.append(url);
             if (i != picPath.size() - 1) {
-                stringBuilder.append(",");
+                stringBuilder.append(";");
             }
         }
         return stringBuilder.toString();

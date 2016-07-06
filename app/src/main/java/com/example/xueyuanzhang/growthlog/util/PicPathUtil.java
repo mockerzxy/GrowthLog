@@ -9,7 +9,7 @@ import java.util.List;
 public class PicPathUtil {
     public static List<String> split(String wholePath){
         List<String> picList = new ArrayList<>();
-        for(String path:wholePath.split(",")){
+        for(String path:wholePath.split(";")){
             picList.add(path);
         }
         return picList;
