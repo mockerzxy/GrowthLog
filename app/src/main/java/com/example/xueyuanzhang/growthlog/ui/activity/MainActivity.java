@@ -97,8 +97,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int itemId = item.getItemId();
-                if (itemId == R.id.share) {
-                    //分享功能
+                if (itemId == R.id.zone) {
+                    Intent intent = new Intent(MainActivity.this,ActivityZone.class);
+                    startActivity(intent);
                 }
                 return false;
             }

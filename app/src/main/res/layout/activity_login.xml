@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:text="GrowthLog"
+            android:textColor="@color/white"
+            android:textSize="40sp">
+
+        </TextView>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_userName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:textColorHint="@color/white"
+            app:hintTextAppearance="@style/hintTheme">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/edit_userName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:fontFamily="sans-serif"
+                android:hint="username"
+                android:singleLine="true"
+                android:textColor="@color/white" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:textColorHint="@color/white"
+            app:hintTextAppearance="@style/hintTheme">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/edit_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:fontFamily="sans-serif"
+                android:hint="password"
+                android:inputType="textPassword"
+                android:textColor="@color/white" />
+
+        </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    </LinearLayout>
+        <Button
+            android:id="@+id/button_login"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="48dp"
+            android:backgroundTint="@color/darkGreen"
+            android:text="login"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/button_register"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/darkGreen"
+            android:text="register"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+</ScrollView>
+

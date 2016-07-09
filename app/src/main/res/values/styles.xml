@@ -20,4 +20,28 @@
         <item name="android:windowExitTransition">@transition/slide_up_to_bottom</item>
     </style>
 
+    <style name="loginTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/statusBarColor</item>
+        <item name="android:windowBackground">@color/colorAccent</item>
+
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/slide_right_to_left</item>
+        <item name="android:windowExitTransition">@transition/slide_left_to_right</item>
+    </style>
+
+    <style name="registerTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/statusBarColor</item>
+        <item name="android:windowBackground">@color/colorAccent</item>
+
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/slide_right_to_left</item>
+        <item name="android:windowExitTransition">@transition/slide_left_to_right</item>
+    </style>
+
+    <style name="hintTheme" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
 </resources>

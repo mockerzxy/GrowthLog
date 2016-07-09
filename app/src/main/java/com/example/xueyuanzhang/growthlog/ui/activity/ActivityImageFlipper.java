@@ -38,10 +38,8 @@ public class ActivityImageFlipper extends AppCompatActivity {
         pic_list = getIntent().getStringArrayListExtra("PIC_LIST");
         position = getIntent().getIntExtra("POSITION",0);
         initView();
-        ProgressDialog progressDialog =ProgressDialog.show(this,"","",true);
         addImageView();
         initViewPager();
-        progressDialog.dismiss();
     }
 
     private void initView() {

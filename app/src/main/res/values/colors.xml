@@ -6,4 +6,9 @@
     <color name="backgroundColor">#FAFAFA</color>
     <color name="white">#FFFFFF</color>
     <color name="shareButtonColor">#d5d5d5</color>
+    <color name="darkGreen">#00695c</color>
+    <color name="statusBarColor">#00796b</color>
+    <color name="toolbarColor">#00897b</color>
 </resources>
+
+

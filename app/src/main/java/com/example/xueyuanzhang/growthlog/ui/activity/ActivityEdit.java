@@ -9,7 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -65,6 +67,7 @@ public class ActivityEdit extends AppCompatActivity {
     private LocalDataBaseHelper dbHelper;
     private Record record;
     private int ifModify;
+    private String capturePath;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,6 +98,16 @@ public class ActivityEdit extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
+                String path = Environment.getExternalStorageDirectory().toString()+"/photoForGrowthLog";
+                File path1 = new File(path);
+                if(!path1.exists()){
+                    path1.mkdirs();
+                }
+                File file = new File(path1,System.currentTimeMillis()+".jpg");
+                capturePath = file.getPath();
+                Log.i("CAP",capturePath);
+                Uri uri  = Uri.fromFile(file);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT,uri);
                 intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent, TAKE_PIC);
             }
@@ -162,7 +175,7 @@ public class ActivityEdit extends AppCompatActivity {
 
     private void initToolbar() {
         toolbar.setNavigationIcon(R.drawable.ic_clear_black_24dp);
-        toolbar.setTitle("Record");
+        toolbar.setTitle("记录");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -180,7 +193,7 @@ public class ActivityEdit extends AppCompatActivity {
                     if(ifModify==0) {
                         insertData(dbHelper.getReadableDatabase(), editText.getText().toString(), mergePicPath(), getTime());
                     }else{
-                        modifyData(dbHelper.getReadableDatabase(),record.getId(),editText.getText().toString(),mergePicPath(),getTime());
+                        modifyData(dbHelper.getReadableDatabase(),record.getId(),editText.getText().toString(),mergePicPath());
                     }
                     dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "记录成功", Toast.LENGTH_SHORT).show();
@@ -259,8 +272,8 @@ public class ActivityEdit extends AppCompatActivity {
         db.execSQL("insert into GrowthLog values(null , ? , ? , ?)", new String[]{text, imagePath,timeStamp});
     }
 
-    private void modifyData(SQLiteDatabase db,int id,String text,String imagePath,String timeStamp){
-        db.execSQL("update GrowthLog set text = '"+text+"', image = '"+imagePath+"', time = '"+timeStamp+"' where _id = "+id);
+    private void modifyData(SQLiteDatabase db,int id,String text,String imagePath){
+        db.execSQL("update GrowthLog set text = '"+text+"', image = '"+imagePath+"' where _id = "+id);
     }
 
     private String mergePicPath() {
@@ -279,5 +292,27 @@ public class ActivityEdit extends AppCompatActivity {
         Calendar calendar = new GregorianCalendar();
         String timeStamp = calendar.getTime().toString();
         return timeStamp;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(capturePath!=null){
+            String path = capturePath;
+            outState.putString("capturePath",path);
+//            ArrayList<String> picPathList= (ArrayList<String>)picPath;
+//            outState.putStringArrayList("picPathList",picPathList);
+
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState.getString("capturePath")!=null){
+            picPath.add(savedInstanceState.getString("capturePath"));
+            Log.i("imCount",imageViewList.size()+"");
+            addImageToHolder(true);
+        }
     }
 }

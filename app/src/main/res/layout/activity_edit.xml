@@ -65,6 +65,7 @@
             android:layout_below="@id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:useDefaultMargins="true"
             android:rowCount="3"
             android:columnCount="3">
 

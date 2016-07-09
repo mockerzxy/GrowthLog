@@ -1,135 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark">
+        android:padding="16dp"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/text_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:text="Sign Up"
+            android:textColor="@color/white"
+            android:textSize="30sp" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:elevation="4dp"
+            app:cardCornerRadius="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorAccent"
+                    android:textColorHint="@color/white"
+                    app:hintTextAppearance="@style/hintTheme">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/edit_userName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/white"
+                        android:hint="用户名"
+                        android:maxLength="10"
+                        android:textColor="@color/white" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/colorAccent"
+                    android:textColorHint="@color/white"
+                    app:hintTextAppearance="@style/hintTheme">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/edit_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/white"
+                        android:hint="密码"
+                        android:inputType="textPassword"
+                        android:maxLength="16"
+                        android:textColor="@color/white" />
+                </android.support.design.widget.TextInputLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/colorAccent"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/edit_birth"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:textColor="@color/white"
+                        android:text="选择出生日期"
+                        android:gravity="center_vertical"
+                        android:textSize="18sp" />
+                    <ImageButton
+                        android:id="@+id/button_select_date"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_grid_on_black_24dp"/>
+                </RelativeLayout>
+
+
+                <!--<android.support.design.widget.TextInputLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="16dp"-->
+                    <!--android:background="@color/colorAccent"-->
+                    <!--android:textColorHint="@color/white"-->
+                    <!--app:hintTextAppearance="@style/hintTheme">-->
+
+                    <!--<android.support.design.widget.TextInputEditText-->
+                        <!--android:id="@+id/edit_birth"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:backgroundTint="@color/white"-->
+                        <!--android:hint="生日"-->
+                        <!--android:inputType="date"-->
+                        <!--android:textColor="@color/white" />-->
+                <!--</android.support.design.widget.TextInputLayout>-->
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/colorAccent"
+                    android:textColorHint="@color/white"
+                    app:hintTextAppearance="@style/hintTheme">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/edit_mail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/white"
+                        android:hint="邮箱"
+                        android:textColor="@color/white" />
+                </android.support.design.widget.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_weight="1"
+                        android:background="@color/colorAccent"
+                        android:textColorHint="@color/white"
+                        app:hintTextAppearance="@style/hintTheme">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/edit_nickname"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/white"
+                            android:hint="昵称"
+                            android:textColor="@color/white" />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:background="@color/colorAccent"
+                        android:textColorHint="@color/white"
+                        app:hintTextAppearance="@style/hintTheme">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/edit_sex"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/white"
+                            android:hint="性别"
+                            android:textColor="@color/white" />
+                    </android.support.design.widget.TextInputLayout>
+
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+        <Button
+            android:id="@id/button_register"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/darkGreen"
             android:text="注册"
             android:textColor="@color/white"
-            android:textSize="20sp"
-            android:transitionName="title"/>
+            android:textSize="16sp" />
 
-    </android.support.v7.widget.Toolbar>
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/input_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:textColorHint="@color/colorAccent">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/edit_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:hint="邮箱"
-            android:inputType="textEmailAddress"
-            android:textColor="@color/white"
-            android:textColorHint="@color/colorAccent"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/input_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:textColorHint="@color/colorAccent">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/edit_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:fontFamily="sans-serif"
-            android:hint="密码"
-            android:inputType="textPassword"
-            android:textColor="@color/white"
-            android:textColorHint="@color/colorAccent"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_last_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="1"
-            android:textColorHint="@color/colorAccent">
-
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/edit_nickname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/white"
-                android:hint="昵称"
-                android:inputType="text"
-                android:maxLength="2"
-                android:textColor="@color/white"
-                android:textColorHint="@color/colorAccent"/>
-
-        </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/input_region"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:textColorHint="@color/colorAccent">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/edit_region"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:hint="地区"
-            android:inputType="text"
-            android:textColor="@color/white"
-            android:textColorHint="@color/colorAccent"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <Button
-        android:id="@+id/button_register"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/colorAccent"
-        android:text="注册"/>
-
-</LinearLayout>
-
+</ScrollView>
