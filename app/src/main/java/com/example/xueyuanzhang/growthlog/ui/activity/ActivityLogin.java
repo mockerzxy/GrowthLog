@@ -20,6 +20,9 @@ import com.example.xueyuanzhang.growthlog.R;
 import com.example.xueyuanzhang.growthlog.api.GrowthLogApi;
 import com.example.xueyuanzhang.growthlog.model.QUser;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -93,8 +96,9 @@ public class ActivityLogin extends AppCompatActivity {
                                         break;
                                     default:
                                         Toast.makeText(getApplicationContext(), "成功登录", Toast.LENGTH_SHORT).show();
-                                        SharedPreferences sharedPreferences = getSharedPreferences("Account", MODE_PRIVATE);
-                                        sharedPreferences.edit().putInt("USER_ID", qUserResp.getUserID()).apply();
+                                        Log.i("ACIN",qUserResp.getMail());
+                                        Log.i("ACIN",qUserResp.getSex());
+                                        storeDataIntoSPR(qUserResp);
                                         Intent intent = new Intent(ActivityLogin.this, MainActivity.class);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(ActivityLogin.this).toBundle());
@@ -122,6 +126,21 @@ public class ActivityLogin extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void storeDataIntoSPR(QUser qUserResp){
+        String birth="";
+        if(qUserResp.getBirth()!=null) {
+            birth = qUserResp.getBirth();
+            Log.i("ACIN",birth);
+        }
+        SharedPreferences sharedPreferences = getSharedPreferences("Account", MODE_PRIVATE);
+        sharedPreferences.edit().putInt("USER_ID", qUserResp.getUserID()).apply();
+        sharedPreferences.edit().putString("USER_NAME",qUserResp.getUserName()).apply();
+        sharedPreferences.edit().putString("USER_EMAIL",qUserResp.getMail()).apply();
+        sharedPreferences.edit().putString("USER_NICK_NAME",qUserResp.getNickName()).apply();
+        sharedPreferences.edit().putString("USER_BIRTH",birth).apply();
+        sharedPreferences.edit().putString("USER_SEX",qUserResp.getSex()).apply();
     }
 
 }

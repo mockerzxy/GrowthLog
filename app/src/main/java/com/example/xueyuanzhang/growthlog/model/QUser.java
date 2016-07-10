@@ -13,7 +13,7 @@ public class QUser {
     private String nickName;
     private String avatar;
     private String sex;
-    private Date birth;
+    private String birth;
     private String mail;
     private Integer message;
 
@@ -65,11 +65,11 @@ public class QUser {
         this.sex = sex;
     }
 
-    public Date getBirth() {
+    public String getBirth() {
         return birth;
     }
 
-    public void setBirth(Date birth) {
+    public void setBirth(String birth) {
         this.birth = birth;
     }
 

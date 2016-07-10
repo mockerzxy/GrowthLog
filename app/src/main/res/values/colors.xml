@@ -9,6 +9,7 @@
     <color name="darkGreen">#00695c</color>
     <color name="statusBarColor">#00796b</color>
     <color name="toolbarColor">#00897b</color>
+    <color name="lightBlack">#424242</color>
 </resources>
 
 

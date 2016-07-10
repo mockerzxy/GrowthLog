@@ -107,7 +107,7 @@ public class ActivityDetail extends AppCompatActivity {
             }
         });
         toolbar.setTitle("日志详情");
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.lightBlack));
     }
 
     private void QueryData(SQLiteDatabase db, int id) {

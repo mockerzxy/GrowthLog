@@ -22,6 +22,7 @@ import com.example.xueyuanzhang.growthlog.R;
 import com.example.xueyuanzhang.growthlog.api.GrowthLogApi;
 import com.example.xueyuanzhang.growthlog.model.QUser;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -54,6 +55,7 @@ public class ActivityRegister extends AppCompatActivity {
     ImageButton buttonSelectDate;
 
     private Date birth;
+    private String covertBirth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,8 +66,8 @@ public class ActivityRegister extends AppCompatActivity {
 
     private void initView() {
         ButterKnife.bind(this);
-        initButton();
         setDatePicker();
+        initButton();
     }
 
     private void setDatePicker(){
@@ -76,9 +78,11 @@ public class ActivityRegister extends AppCompatActivity {
                 new DatePickerDialog(ActivityRegister.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        birth = new Date(year-1900,monthOfYear,dayOfMonth);
+                        covertBirth = new SimpleDateFormat("yyyy/MM/dd").format(birth);
                         monthOfYear = monthOfYear+1;
-                        birth = new Date(year,monthOfYear,dayOfMonth);
                         editBirth.setText(year+"年"+monthOfYear+"月"+dayOfMonth+"日");
+                        Log.i("TIME",covertBirth);
                     }
                 },c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH)).show();
             }
@@ -95,19 +99,23 @@ public class ActivityRegister extends AppCompatActivity {
                 boolean ifNecessary = !(editUserName.getText().toString().isEmpty()
                         || editPassword.getText().toString().isEmpty()
                         || editNickName.getText().toString().isEmpty());
-                if (true) {
+                if (ifNecessary) {
                     final ProgressDialog progressDialog = ProgressDialog.show(ActivityRegister.this, "", "注册中", true);
                     QUser user = new QUser();
                     user.setUserName(editUserName.getText().toString());
                     user.setPassword(editPassword.getText().toString());
                     user.setNickName(editNickName.getText().toString());
                     if(birth!=null){
-                        user.setBirth(birth);
+                        user.setBirth(covertBirth);
+                        Log.i("USER_BIRTH",covertBirth);
                     }
                     user.setSex(editSex.getText().toString());
+                    user.setMail(editMail.getText().toString());
                     Log.i("USER_NAME", user.getUserName());
                     Log.i("USER_PW", user.getPassword());
                     Log.i("USER_NM", user.getNickName());
+                    Log.i("USER_SEX",user.getSex());
+
 
                     Call<QUser> call = GrowthLogApi.getInstance().register(user.getUserName(), user.getPassword(),
                             user.getNickName(), user.getMail(), user.getSex(),user.getBirth());
@@ -119,9 +127,6 @@ public class ActivityRegister extends AppCompatActivity {
                                 Toast.makeText(ActivityRegister.this, "error", Toast.LENGTH_SHORT).show();
                             } else {
                                 QUser user1 = response.body();
-                                Log.i("INFO_UN", user1.getUserName());
-                                Log.i("INFO_PW", user1.getUserName());
-                                Log.i("INFO_NN", user1.getUserName());
                                 switch (user1.getMessage()) {
                                     case -2:
                                         Toast.makeText(getApplicationContext(), "用户信息不完整", Toast.LENGTH_SHORT).show();
@@ -132,12 +137,9 @@ public class ActivityRegister extends AppCompatActivity {
                                     case 0:
                                         Toast.makeText(getApplicationContext(), "未知错误发生", Toast.LENGTH_SHORT).show();
                                         break;
-                                    case 1:
+                                    default:
                                         Toast.makeText(getApplicationContext(), "成功注册", Toast.LENGTH_SHORT).show();
                                         onBackPressed();
-                                        break;
-                                    default:
-                                        Toast.makeText(ActivityRegister.this, "unknown message", Toast.LENGTH_SHORT).show();
                                 }
                             }
 

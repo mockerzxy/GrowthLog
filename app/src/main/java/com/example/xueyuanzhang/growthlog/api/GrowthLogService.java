@@ -21,5 +21,6 @@ public interface GrowthLogService {
     @GET("registerAction")
     Call<QUser> register(@Query("user.userName") String userName,@Query("user.password") String password,
                          @Query("user.nickName") String nickName,@Query("user.mail") String mail,@Query("user.sex") String sex,
-                         @Query("user.birth") Date birth);
+                         @Query("user.birth") String birth);
+
 }

@@ -2,6 +2,7 @@ package com.example.xueyuanzhang.growthlog.ui.activity;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -32,6 +33,7 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.ArrayList;
@@ -58,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private List<Record> recordList = new ArrayList<>();
     private List<ListEntry> parentList = new ArrayList<>();
     private RecordListAdapter adapter;
+    private int userId;
+    private String email;
+    private String nickName;
 
 
 
@@ -117,9 +122,19 @@ public class MainActivity extends AppCompatActivity {
                 .withToolbar(toolbar)
                 .withAccountHeader(headerView)
                 .addDrawerItems(
-                        item1,
-                        new DividerDrawerItem()
+                        item1
                 )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        switch (position){
+                            case 1:
+                                Intent intent = new Intent(MainActivity.this,ActivityProfile.class);
+                                startActivity(intent);
+                        }
+                        return true;
+                    }
+                })
                 .withSelectedItem(-1)
                 .build();
     }
@@ -239,11 +254,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initAccountHeader() {
+        getDataFromSharePR();
         headerView = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withTranslucentStatusBar(true)
                 .withHeaderBackground(R.drawable.growth)
-                .addProfiles(new ProfileDrawerItem().withName("Moris").withEmail("moris.zxy@gmail.com").withIcon(R.drawable.header))
+                .addProfiles(new ProfileDrawerItem().withName(nickName).withEmail(email).withIcon(R.drawable.header))
                 .withOnAccountHeaderSelectionViewClickListener(new AccountHeader.OnAccountHeaderSelectionViewClickListener() {
                     @Override
                     public boolean onClick(View view, IProfile profile) {
@@ -311,5 +327,12 @@ public class MainActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         }
+    }
+
+    private void getDataFromSharePR(){
+        SharedPreferences sharedPreferences = getSharedPreferences("Account",MODE_PRIVATE);
+        userId = sharedPreferences.getInt("USER_ID",0);
+        email = sharedPreferences.getString("USER_EMAIL","null");
+        nickName = sharedPreferences.getString("USER_NICK_NAME","null");
     }
 }
