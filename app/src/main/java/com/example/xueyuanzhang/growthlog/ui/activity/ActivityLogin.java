@@ -132,7 +132,6 @@ public class ActivityLogin extends AppCompatActivity {
         String birth="";
         if(qUserResp.getBirth()!=null) {
             birth = qUserResp.getBirth();
-            Log.i("ACIN",birth);
         }
         SharedPreferences sharedPreferences = getSharedPreferences("Account", MODE_PRIVATE);
         sharedPreferences.edit().putInt("USER_ID", qUserResp.getUserID()).apply();
@@ -141,6 +140,8 @@ public class ActivityLogin extends AppCompatActivity {
         sharedPreferences.edit().putString("USER_NICK_NAME",qUserResp.getNickName()).apply();
         sharedPreferences.edit().putString("USER_BIRTH",birth).apply();
         sharedPreferences.edit().putString("USER_SEX",qUserResp.getSex()).apply();
+        sharedPreferences.edit().putString("USER_PW",qUserResp.getPassword()).apply();
+        sharedPreferences.edit().putString("USER_HEADER",qUserResp.getAvatar()).apply();
     }
 
 }

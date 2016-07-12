@@ -78,10 +78,11 @@ public class ActivityRegister extends AppCompatActivity {
                 new DatePickerDialog(ActivityRegister.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        birth = new Date(year-1900,monthOfYear,dayOfMonth);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(year,monthOfYear,dayOfMonth);
+                        birth = calendar.getTime();
                         covertBirth = new SimpleDateFormat("yyyy/MM/dd").format(birth);
-                        monthOfYear = monthOfYear+1;
-                        editBirth.setText(year+"年"+monthOfYear+"月"+dayOfMonth+"日");
+                        editBirth.setText(covertBirth);
                         Log.i("TIME",covertBirth);
                     }
                 },c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH)).show();

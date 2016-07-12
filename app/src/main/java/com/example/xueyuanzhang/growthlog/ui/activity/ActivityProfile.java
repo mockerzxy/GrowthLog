@@ -3,8 +3,13 @@ package com.example.xueyuanzhang.growthlog.ui.activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,15 +21,23 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.xueyuanzhang.growthlog.R;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,6 +48,8 @@ import butterknife.ButterKnife;
 public class ActivityProfile extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.header_bar)
+    RelativeLayout headerBar;
     @BindView(R.id.username_bar)
     LinearLayout userNameBar;
     @BindView(R.id.nickname_bar)
@@ -45,6 +60,8 @@ public class ActivityProfile extends AppCompatActivity {
     LinearLayout birthBar;
     @BindView(R.id.sex_bar)
     LinearLayout sexBar;
+    @BindView(R.id.header_profile)
+    ImageView headerBT;
     @BindView(R.id.username_profile)
     TextView userNameTV;
     @BindView(R.id.nickname_profile)
@@ -61,6 +78,10 @@ public class ActivityProfile extends AppCompatActivity {
     private String email;
     private String birth;
     private String sex;
+    private String password;
+    private String header;
+
+    private final static int SELECT_HEADER = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +94,8 @@ public class ActivityProfile extends AppCompatActivity {
     private void initView() {
         ButterKnife.bind(this);
         initToolbar();
+        File file = new File(header);
+        Picasso.with(this).load(file).into(headerBT);
         userNameTV.setText(userName);
         nickNameTV.setText(nickName);
         emailTV.setText(email);
@@ -100,9 +123,22 @@ public class ActivityProfile extends AppCompatActivity {
         email = sharedPreferences.getString("USER_EMAIL", "null");
         birth = sharedPreferences.getString("USER_BIRTH", "null");
         sex = sharedPreferences.getString("USER_SEX", "null");
+        password = sharedPreferences.getString("USER_PW", "null");
+        header = sharedPreferences.getString("USER_HEADER", "null");
+
     }
 
     private void initLayoutClick() {
+        headerBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/s/*");
+                intent.setAction(intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent,SELECT_HEADER);
+
+            }
+        });
         nickNameBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,7 +149,9 @@ public class ActivityProfile extends AppCompatActivity {
         birthBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 initDatePickerdialog();
+
             }
         });
 
@@ -134,17 +172,21 @@ public class ActivityProfile extends AppCompatActivity {
 
     private void initInputDialog(final String flags) {
         final EditText editText = new EditText(ActivityProfile.this);
-        editText.setHint(nickName);
+        if (flags.equals("修改昵称")) {
+            editText.setHint(nickName);
+        } else {
+            editText.setHint(email);
+        }
         final AlertDialog.Builder builder = new AlertDialog.Builder(ActivityProfile.this);
         builder.setTitle(flags)
                 .setView(editText)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(flags.equals("修改昵称")){
+                        if (flags.equals("修改昵称")) {
                             nickNameTV.setText(editText.getText());
                         }
-                        if(flags.equals("修改邮箱")){
+                        if (flags.equals("修改邮箱")) {
                             emailTV.setText(editText.getText());
                         }
                     }
@@ -183,20 +225,61 @@ public class ActivityProfile extends AppCompatActivity {
     }
 
     private void initDatePickerdialog() {
-        Date oldDate = new Date(birth);
-        Log.i("OLDD",new SimpleDateFormat("yyyy-MM-dd").format(oldDate));
-
+        Calendar c = new GregorianCalendar();
+        if (!birth.isEmpty()) {
+            Date oldDate = new Date(birth);
+            Log.i("CLD", oldDate.toString());
+            c.setTime(oldDate);
+        }
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Date date = new Date(year-1900,monthOfYear,dayOfMonth);
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(year, monthOfYear, dayOfMonth);
+                Date date = calendar.getTime();
                 String birth = new SimpleDateFormat("yyyy/MM/dd").format(date);
                 birthTV.setText(birth);
-                Log.i("TIMEQ",birth);
 
 
             }
-        }, oldDate.getYear()+1900, oldDate.getMonth(), oldDate.getDay()+10);
+        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){
+            if(requestCode==SELECT_HEADER){
+                doPhoto(data);
+            }
+        }
+    }
+
+    private void doPhoto(Intent data){
+        if (data == null) {
+            Toast.makeText(getApplicationContext(), "选择文件图片出错", Toast.LENGTH_SHORT).show();
+        } else {
+            Uri uri = data.getData();
+            if (uri == null) {
+                Toast.makeText(getApplicationContext(), "选择文件图片出错", Toast.LENGTH_SHORT).show();
+            } else {
+                String[] po = {MediaStore.Images.Media.DATA};
+                Cursor cursor = this.managedQuery(uri, po, null, null, null);
+                if (cursor != null) {
+                    int columnIndex = cursor.getColumnIndexOrThrow(po[0]);
+                    cursor.moveToFirst();
+                    header = cursor.getString(columnIndex);
+                    File file = new File(header);
+                    Log.i("PATH",header);
+                    Picasso.with(this).load(file).resize(48,48).into(headerBT);
+                    if (Integer.parseInt(Build.VERSION.SDK) < 14) {
+                        cursor.close();
+                    }
+                }
+            }
+
+        }
     }
 }
