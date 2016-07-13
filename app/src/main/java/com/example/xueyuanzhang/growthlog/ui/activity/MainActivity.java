@@ -16,9 +16,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.example.xueyuanzhang.growthlog.R;
@@ -29,6 +31,7 @@ import com.example.xueyuanzhang.growthlog.ui.adapter.RecordListAdapter;
 import com.example.xueyuanzhang.growthlog.ui.util.TimeUtil;
 import com.example.xueyuanzhang.growthlog.util.LocalDataBaseHelper;
 import com.example.xueyuanzhang.growthlog.util.PicPathUtil;
+import com.example.xueyuanzhang.growthlog.util.SearchUtil;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -55,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.swipe_container)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    private SearchView searchView;
 
 
     private final static int EDIT_NEW_DIARY = 1;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private AccountHeader headerView;
     private List<Record> recordList = new ArrayList<>();
     private List<ListEntry> parentList = new ArrayList<>();
+    private List<Record> dataList = new ArrayList<>();
     private RecordListAdapter adapter;
     private int userId;
     private String email;
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         ButterKnife.bind(this);
-        toolbar.inflateMenu(R.menu.menu_toobar);
+        setSupportActionBar(toolbar);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -118,11 +121,6 @@ public class MainActivity extends AppCompatActivity {
                 if (itemId == R.id.zone) {
                     Intent intent = new Intent(MainActivity.this, ActivityZone.class);
                     startActivity(intent);
-                }
-                if (itemId == R.id.search) {
-                    searchView = (SearchView) MenuItemCompat.getActionView(item);
-                    searchView.setVisibility(View.VISIBLE);
-                    return true;
                 }
                 return false;
             }
@@ -380,8 +378,54 @@ public class MainActivity extends AppCompatActivity {
         header = sharedPreferences.getString("USER_HEADER", "null");
     }
 
-    private void initSearchView() {
+    private void initSearchView(SearchView searchView) {
+        searchView.setIconifiedByDefault(true);
+        SearchView.SearchAutoComplete mEdit = (SearchView.SearchAutoComplete)searchView.findViewById(R.id.search_src_text);
+        mEdit.setHintTextColor(getResources().getColor(R.color.lightBlack));
+        mEdit.setTextColor(getResources().getColor(R.color.lightBlack));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.i("result",query);
+                Toast.makeText(MainActivity.this, "query", Toast.LENGTH_SHORT).show();
+                doSearch(query);
+                adapter.notifyDataSetChanged();
+                return true;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.i("HAHAHA","****");
+                return false;
+            }
+
+
+        });
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_toobar,menu);
+        MenuItem menuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView)MenuItemCompat.getActionView(menuItem);
+        initSearchView(searchView);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void doSearch(String target){
+        String[] textList = new String[recordList.size()];
+        for(int i=0;i<recordList.size();i++){
+           textList[i] = recordList.get(i).getText();
+        }
+        SearchUtil searchUtil = new SearchUtil();
+        double[] score = searchUtil.retrieval(target,textList);
+        parentList.clear();
+        for(int i=0;i<score.length;i++){
+            if(score[i]!=0){
+                parentList.add(recordList.get(i));
+            }
+        }
     }
 
 
