@@ -9,22 +9,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:src="@drawable/diary"
             android:scaleType="centerInside"
-            />
-        <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="200dp"-->
-            <!--android:fontFamily="monospace"-->
-            <!--android:gravity="center"-->
-            <!--android:text="GrowthLog"-->
-            <!--android:textColor="@color/white"-->
-            <!--android:textSize="40sp">-->
+            android:src="@drawable/last" />
 
-        <!--</TextView>-->
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_userName"
@@ -41,8 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
-                android:fontFamily="sans-serif"
-                android:hint="username"
+                android:hint="用户名"
                 android:singleLine="true"
                 android:textColor="@color/white" />
 
@@ -64,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif"
-                android:hint="password"
+                android:hint="密码"
                 android:inputType="textPassword"
                 android:textColor="@color/white" />
 
@@ -84,7 +74,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="48dp"
             android:backgroundTint="@color/darkGreen"
-            android:text="login"
+            android:text="登录"
             android:textColor="@color/white" />
 
         <Button
@@ -95,7 +85,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:backgroundTint="@color/darkGreen"
-            android:text="register"
+            android:text="注册"
             android:textColor="@color/white" />
 
     </LinearLayout>

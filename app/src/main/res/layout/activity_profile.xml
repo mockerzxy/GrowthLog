@@ -244,6 +244,7 @@
         </LinearLayout>
     </android.support.v7.widget.CardView>
     <Button
+        android:id="@+id/save_modify"
         android:layout_width="100dp"
         android:layout_height="48dp"
         android:layout_margin="16dp"

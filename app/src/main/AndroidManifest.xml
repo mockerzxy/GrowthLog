@@ -39,6 +39,10 @@
             android:theme="@style/registerTheme"
             />
         <activity android:name=".ui.activity.ActivityProfile"/>
+        <activity android:name=".ui.activity.ActivityShare">
+
+        </activity>
+        <activity android:name=".ui.activity.ActivityModifyPw"/>
 
     </application>
 

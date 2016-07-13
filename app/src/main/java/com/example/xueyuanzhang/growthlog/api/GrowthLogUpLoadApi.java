@@ -1,45 +1,32 @@
 package com.example.xueyuanzhang.growthlog.api;
 
-import com.google.gson.GsonBuilder;
-
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by xueyuanzhang on 16/7/6.
+ * Created by xueyuanzhang on 16/7/12.
  */
-public class GrowthLogApi {
-
-    public interface OnResultListener {
-        void onSuccess(Object result);
-
-        void onFailure(String error);
-    }
-
+public class GrowthLogUpLoadApi {
 
     private static GrowthLogService instance;
 
-
-    private static GrowthLogService createService() {
+    private static GrowthLogService createUpLoadService() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://104.224.175.72:8081/GrowthLog/")
+                .baseUrl("https://upload.api.weibo.com/2/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         return retrofit.create(GrowthLogService.class);
     }
 
-
-    public static GrowthLogService getInstance() {
+    public static GrowthLogService getUploadInstance() {
         if (instance == null) {
-            synchronized (GrowthLogApi.class) {
+            synchronized (GrowthLogUpLoadApi.class) {
                 if (instance == null) {
-                    instance = createService();
+                    instance = createUpLoadService();
                 }
             }
         }
 
         return instance;
     }
-
-
 }

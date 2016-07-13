@@ -14,5 +14,62 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ThemeOverlay.AppCompat.Light" />
 
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:stretchColumns="1">
+        <TableRow>
+            <!-- style="@style/componentMargin"-->
+            <TextView
+                style="@style/componentMargin"
+                android:layout_height="wrap_content"
+                android:text="@string/old_Password"/>
+            <EditText
+                style="@style/componentMargin"
+                android:id="@+id/old_password"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:hint="@string/old_Password_Hint"/>
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                style="@style/componentMargin"
+                android:layout_height="wrap_content"
+                android:text="@string/new_Password"/>
+            <EditText
+                style="@style/componentMargin"
+                android:id="@+id/new_password"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:hint="@string/new_Password_Hint"/>
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                style="@style/componentMargin"
+                android:layout_height="wrap_content"
+                android:text="@string/confirm_Password"/>
+            <EditText
+                style="@style/componentMargin"
+                android:id="@+id/confirm_password"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:hint="@string/confirm_Password_Hint"/>
+        </TableRow>
+
+    </TableLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/change_Password"
+        android:onClick="changePassword"/>
 
 </LinearLayout>

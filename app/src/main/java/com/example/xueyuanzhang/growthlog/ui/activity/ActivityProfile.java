@@ -2,6 +2,7 @@ package com.example.xueyuanzhang.growthlog.ui.activity;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -29,6 +31,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.xueyuanzhang.growthlog.R;
+import com.example.xueyuanzhang.growthlog.api.GrowthLogApi;
+import com.example.xueyuanzhang.growthlog.model.IntResponse;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -41,6 +45,9 @@ import java.util.GregorianCalendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by xueyuanzhang on 16/7/10.
@@ -72,6 +79,8 @@ public class ActivityProfile extends AppCompatActivity {
     TextView birthTV;
     @BindView(R.id.sex_profile)
     TextView sexTV;
+    @BindView(R.id.save_modify)
+    Button saveButton;
 
     private String userName;
     private String nickName;
@@ -102,6 +111,7 @@ public class ActivityProfile extends AppCompatActivity {
         birthTV.setText(birth);
         sexTV.setText(sex);
         initLayoutClick();
+        initButtonClick();
     }
 
     private void initToolbar() {
@@ -135,7 +145,7 @@ public class ActivityProfile extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setType("image/s/*");
                 intent.setAction(intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent,SELECT_HEADER);
+                startActivityForResult(intent, SELECT_HEADER);
 
             }
         });
@@ -166,6 +176,43 @@ public class ActivityProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 initSelectDialog();
+            }
+        });
+
+    }
+
+    private void initButtonClick() {
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final ProgressDialog progressDialog  = ProgressDialog.show(ActivityProfile.this,"","正在修改中，请稍后",false);
+                Call<IntResponse> call = GrowthLogApi.getInstance().updateUser(userName, password, nickName, email, sex, birth);
+                call.enqueue(new Callback<IntResponse>() {
+                    @Override
+                    public void onResponse(Call<IntResponse> call, Response<IntResponse> response) {
+                        if (response.body() == null) {
+                            Toast.makeText(ActivityProfile.this, "null", Toast.LENGTH_SHORT).show();
+                        } else {
+                            progressDialog.dismiss();
+                            IntResponse intResponse = response.body();
+                            switch (intResponse.getResult()){
+                                case 0:
+                                    Toast.makeText(getApplicationContext(), "修改失败", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case 1:
+                                    Toast.makeText(getApplicationContext(), "修改成功", Toast.LENGTH_SHORT).show();
+                                    break;
+                                default:
+                                    Toast.makeText(getApplicationContext(), "系统错误", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<IntResponse> call, Throwable t) {
+                        Toast.makeText(ActivityProfile.this, "连接异常，请检查网络", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }
@@ -250,14 +297,14 @@ public class ActivityProfile extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){
-            if(requestCode==SELECT_HEADER){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECT_HEADER) {
                 doPhoto(data);
             }
         }
     }
 
-    private void doPhoto(Intent data){
+    private void doPhoto(Intent data) {
         if (data == null) {
             Toast.makeText(getApplicationContext(), "选择文件图片出错", Toast.LENGTH_SHORT).show();
         } else {
@@ -272,8 +319,8 @@ public class ActivityProfile extends AppCompatActivity {
                     cursor.moveToFirst();
                     header = cursor.getString(columnIndex);
                     File file = new File(header);
-                    Log.i("PATH",header);
-                    Picasso.with(this).load(file).resize(48,48).into(headerBT);
+                    Log.i("PATH", header);
+                    Picasso.with(this).load(file).resize(48, 48).into(headerBT);
                     if (Integer.parseInt(Build.VERSION.SDK) < 14) {
                         cursor.close();
                     }

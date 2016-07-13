@@ -134,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 break;
                             case 2:
-                                Intent intent1 = new Intent();
+                                Intent intent1 = new Intent(MainActivity.this,ActivityModifyPw.class);
+                                startActivity(intent1);
                         }
                         return true;
                     }
@@ -197,6 +198,14 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<String> pic_list = (ArrayList<String>) picList;
                 intent.putStringArrayListExtra("PIC_LIST",pic_list);
                 intent.putExtra("POSITION",position);
+                startActivity(intent);
+            }
+        });
+        adapter.setOnShareListener(new RecordListAdapter.OnShareListener() {
+            @Override
+            public void onShare(int id) {
+                Intent intent = new Intent(MainActivity.this,ActivityShare.class);
+                intent.putExtra("record_id",id);
                 startActivity(intent);
             }
         });
