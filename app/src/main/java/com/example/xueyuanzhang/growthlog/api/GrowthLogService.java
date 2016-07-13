@@ -55,4 +55,6 @@ public interface GrowthLogService {
                                  @Query("user.nickName") String nickName, @Query("user.mail") String mail, @Query("user.sex") String sex,
                                  @Query("user.birth") String birth,@Query("user.avatar") String header);
 
+    @GET("addZoneAction")
+    Call<IntResponse> addZone(@Query("groupName") String groupName, @Query("createrID") Integer createrID);
 }

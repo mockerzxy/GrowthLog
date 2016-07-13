@@ -15,14 +15,11 @@
             android:name=".ui.activity.MainActivity"
             android:label="GrowthLog"
             android:theme="@style/homeTheme">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-
         </activity>
         <activity
             android:name=".ui.activity.ActivityEdit"
@@ -30,22 +27,16 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.activity.ActivityDetail" />
         <activity android:name=".ui.activity.ActivityImageFlipper" />
-        <activity android:name=".ui.activity.ActivityLogin"
-                  android:theme="@style/loginTheme"
-            >
-
-
-        </activity>
+        <activity
+            android:name=".ui.activity.ActivityLogin"
+            android:theme="@style/loginTheme"></activity>
         <activity android:name=".ui.activity.ActivityZone" />
-        <activity android:name=".ui.activity.ActivityRegister"
-            android:theme="@style/registerTheme"
-            />
-        <activity android:name=".ui.activity.ActivityProfile"/>
-        <activity android:name=".ui.activity.ActivityShare">
-
-        </activity>
-        <activity android:name=".ui.activity.ActivityModifyPw"/>
-
+        <activity
+            android:name=".ui.activity.ActivityRegister"
+            android:theme="@style/registerTheme" />
+        <activity android:name=".ui.activity.ActivityProfile" />
+        <activity android:name=".ui.activity.ActivityShare"></activity>
+        <activity android:name=".ui.activity.ActivityModifyPw" />
     </application>
 
 </manifest>
