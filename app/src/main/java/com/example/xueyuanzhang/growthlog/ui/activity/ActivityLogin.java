@@ -142,6 +142,7 @@ public class ActivityLogin extends AppCompatActivity {
         sharedPreferences.edit().putString("USER_SEX",qUserResp.getSex()).apply();
         sharedPreferences.edit().putString("USER_PW",qUserResp.getPassword()).apply();
         sharedPreferences.edit().putString("USER_HEADER",qUserResp.getAvatar()).apply();
+//        Log.i("AvatarRec",);
     }
 
 }

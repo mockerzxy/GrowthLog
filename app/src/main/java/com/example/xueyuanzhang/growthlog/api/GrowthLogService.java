@@ -53,6 +53,6 @@ public interface GrowthLogService {
     @GET("updateUserAction")
     Call<IntResponse> updateUser(@Query("user.userName") String userName, @Query("user.password") String password,
                                  @Query("user.nickName") String nickName, @Query("user.mail") String mail, @Query("user.sex") String sex,
-                                 @Query("user.birth") String birth);
+                                 @Query("user.birth") String birth,@Query("user.avatar") String header);
 
 }

@@ -8,12 +8,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -52,7 +55,10 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.swipe_container)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    private final static int EDIT_NEW_DIARY=1;
+    private SearchView searchView;
+
+
+    private final static int EDIT_NEW_DIARY = 1;
 
     private LocalDataBaseHelper dbHelper;
     private Drawer drawer;
@@ -63,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private int userId;
     private String email;
     private String nickName;
-
+    private String header;
 
 
     private Paint p = new Paint();
@@ -71,26 +77,33 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        initView();
-        dbHelper = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 2);
-        queryAllData(dbHelper.getReadableDatabase());
+        SharedPreferences pref = getSharedPreferences("Account", MODE_PRIVATE);
+        int id = pref.getInt("USER_ID", 0);
+        if (id == 0) {
+            Intent intent = new Intent(MainActivity.this, ActivityLogin.class);
+            startActivity(intent);
+        } else {
+            setContentView(R.layout.activity_main);
+            initView();
+            dbHelper = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 2);
+            queryAllData(dbHelper.getReadableDatabase());
 
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ActivityEdit.class);
-                startActivityForResult(intent,EDIT_NEW_DIARY, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
-            }
-        });
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                queryAllData(dbHelper.getReadableDatabase());
-                adapter.notifyDataSetChanged();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        });
+            floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, ActivityEdit.class);
+                    startActivityForResult(intent, EDIT_NEW_DIARY, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                }
+            });
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    queryAllData(dbHelper.getReadableDatabase());
+                    adapter.notifyDataSetChanged();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            });
+        }
 
 
     }
@@ -103,8 +116,13 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 int itemId = item.getItemId();
                 if (itemId == R.id.zone) {
-                    Intent intent = new Intent(MainActivity.this,ActivityZone.class);
+                    Intent intent = new Intent(MainActivity.this, ActivityZone.class);
                     startActivity(intent);
+                }
+                if (itemId == R.id.search) {
+                    searchView = (SearchView) MenuItemCompat.getActionView(item);
+                    searchView.setVisibility(View.VISIBLE);
+                    return true;
                 }
                 return false;
             }
@@ -117,25 +135,36 @@ public class MainActivity extends AppCompatActivity {
     private void initDrawer() {
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("个人资料").withIcon(R.drawable.ic_person_black_24dp).withTag("profile").withTextColor(Color.BLACK).withSelectable(false);
         PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("修改密码").withIcon(R.drawable.ic_build_black_24dp).withTag("modifyPW").withTextColor(Color.BLACK).withSelectable(false);
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("退出登录").withIcon(R.drawable.ic_clear_black_24dp).withTag("quit").withTextColor(Color.BLACK).withSelectable(false);
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withAccountHeader(headerView)
                 .addDrawerItems(
                         item1,
-                        item2
+                        item2,
+                        item3
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        switch (position){
+                        switch (position) {
                             case 1:
-                                Intent intent = new Intent(MainActivity.this,ActivityProfile.class);
+                                Intent intent = new Intent(MainActivity.this, ActivityProfile.class);
                                 startActivity(intent);
                                 break;
                             case 2:
-                                Intent intent1 = new Intent(MainActivity.this,ActivityModifyPw.class);
+                                Intent intent1 = new Intent(MainActivity.this, ActivityModifyPw.class);
                                 startActivity(intent1);
+                                break;
+
+                            case 3:
+                                SharedPreferences pref = getSharedPreferences("Account", MODE_PRIVATE);
+                                pref.edit().clear().commit();
+                                Intent intent2 = new Intent(MainActivity.this,ActivityLogin.class);
+                                intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent2);
+                                break;
                         }
                         return true;
                     }
@@ -180,32 +209,32 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnDeleteListener(new RecordListAdapter.OnDeleteListener() {
             @Override
             public void onDelete(int id) {
-                deleteItemData(dbHelper.getReadableDatabase(),id);
+                deleteItemData(dbHelper.getReadableDatabase(), id);
             }
         });
         adapter.setOnShowDetailListener(new RecordListAdapter.OnShowDetailListener() {
             @Override
             public void onDetail(int id) {
-                Intent intent = new Intent(MainActivity.this,ActivityDetail.class);
-                intent.putExtra("diary_id",id);
+                Intent intent = new Intent(MainActivity.this, ActivityDetail.class);
+                intent.putExtra("diary_id", id);
                 startActivity(intent);
             }
         });
         adapter.setOnClickImageListener(new RecordListAdapter.OnClickImageListener() {
             @Override
             public void onClick(int position, List<String> picList) {
-                Intent intent = new Intent(MainActivity.this,ActivityImageFlipper.class);
+                Intent intent = new Intent(MainActivity.this, ActivityImageFlipper.class);
                 ArrayList<String> pic_list = (ArrayList<String>) picList;
-                intent.putStringArrayListExtra("PIC_LIST",pic_list);
-                intent.putExtra("POSITION",position);
+                intent.putStringArrayListExtra("PIC_LIST", pic_list);
+                intent.putExtra("POSITION", position);
                 startActivity(intent);
             }
         });
         adapter.setOnShareListener(new RecordListAdapter.OnShareListener() {
             @Override
             public void onShare(int id) {
-                Intent intent = new Intent(MainActivity.this,ActivityShare.class);
-                intent.putExtra("record_id",id);
+                Intent intent = new Intent(MainActivity.this, ActivityShare.class);
+                intent.putExtra("record_id", id);
                 startActivity(intent);
             }
         });
@@ -272,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
                 .withActivity(this)
                 .withTranslucentStatusBar(true)
                 .withHeaderBackground(R.drawable.growth)
-                .addProfiles(new ProfileDrawerItem().withName(nickName).withEmail(email).withIcon(R.drawable.header))
+                .addProfiles(new ProfileDrawerItem().withName(nickName).withEmail(email).withIcon(header))
                 .withOnAccountHeaderSelectionViewClickListener(new AccountHeader.OnAccountHeaderSelectionViewClickListener() {
                     @Override
                     public boolean onClick(View view, IProfile profile) {
@@ -319,12 +348,13 @@ public class MainActivity extends AppCompatActivity {
     private void deleteItemData(SQLiteDatabase db, int id) {
         int position = 0;
         db.execSQL("delete from GrowthLog where _id = " + id);
-        for(int i=0;i<parentList.size();i++){
-            if(parentList.get(i) instanceof Record){
-               Record record = (Record)parentList.get(i);
-                if(record.getId()==id){
+        for (int i = 0; i < parentList.size(); i++) {
+            if (parentList.get(i) instanceof Record) {
+                Record record = (Record) parentList.get(i);
+                if (record.getId() == id) {
                     position = i;
                 }
+
             }
         }
         parentList.remove(position);
@@ -334,18 +364,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){
-            if(requestCode==EDIT_NEW_DIARY){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == EDIT_NEW_DIARY) {
                 queryAllData(dbHelper.getReadableDatabase());
                 adapter.notifyDataSetChanged();
             }
         }
     }
 
-    private void getDataFromSharePR(){
-        SharedPreferences sharedPreferences = getSharedPreferences("Account",MODE_PRIVATE);
-        userId = sharedPreferences.getInt("USER_ID",0);
-        email = sharedPreferences.getString("USER_EMAIL","null");
-        nickName = sharedPreferences.getString("USER_NICK_NAME","null");
+    private void getDataFromSharePR() {
+        SharedPreferences sharedPreferences = getSharedPreferences("Account", MODE_PRIVATE);
+        userId = sharedPreferences.getInt("USER_ID", 0);
+        email = sharedPreferences.getString("USER_EMAIL", "null");
+        nickName = sharedPreferences.getString("USER_NICK_NAME", "null");
+        header = sharedPreferences.getString("USER_HEADER", "null");
     }
+
+    private void initSearchView() {
+
+    }
+
+
 }

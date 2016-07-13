@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -18,6 +19,7 @@ import com.example.xueyuanzhang.growthlog.model.IntResponse;
 import com.example.xueyuanzhang.growthlog.model.QUser;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,7 +28,8 @@ import retrofit2.Response;
  * Created by xueyuanzhang on 16/7/12.
  */
 public class ActivityModifyPw extends AppCompatActivity{
-
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     private EditText editText_oldPassword;
     private EditText editText_newPassword;
     private EditText editText_confirmPassword;
@@ -35,10 +38,27 @@ public class ActivityModifyPw extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_pw);
+        initView();
+        initToolbar();
 
         editText_oldPassword = (EditText)findViewById(R.id.old_password);
         editText_newPassword = (EditText)findViewById(R.id.new_password);
         editText_confirmPassword = (EditText)findViewById(R.id.confirm_password);
+    }
+    private void initView(){
+        ButterKnife.bind(this);
+    }
+
+    private void initToolbar(){
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        toolbar.setTitle("修改密码");
+        toolbar.setTitleTextColor(getResources().getColor(R.color.lightBlack));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     public void changePassword(View view){
@@ -54,8 +74,8 @@ public class ActivityModifyPw extends AppCompatActivity{
             if(user.getPassword().equals(oldPassword)){
                 if(newPassword.equals(confirmPassword)){
                     final ProgressDialog progressDialog = ProgressDialog.show(ActivityModifyPw.this, "", "修改中", true);
-                    Call<IntResponse> call = GrowthLogApi.getInstance().updateUser(user.getUserName(), user.getPassword(),
-                            user.getNickName(), user.getMail(), user.getSex(),user.getBirth());
+                    Call<IntResponse> call = GrowthLogApi.getInstance().updateUser(user.getUserName(), newPassword,
+                            user.getNickName(), user.getMail(), user.getSex(),user.getBirth(),user.getAvatar());
                     call.enqueue(new Callback<IntResponse>() {
                         @Override
                         public void onResponse(Call<IntResponse> call, Response<IntResponse> response) {
@@ -75,6 +95,7 @@ public class ActivityModifyPw extends AppCompatActivity{
                                     case 1:
                                         Toast.makeText(getApplicationContext(), "修改成功", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(ActivityModifyPw.this,ActivityLogin.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
                                         break;
                                     default:

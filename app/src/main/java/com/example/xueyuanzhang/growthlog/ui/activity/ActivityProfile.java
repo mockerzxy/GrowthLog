@@ -104,7 +104,7 @@ public class ActivityProfile extends AppCompatActivity {
         ButterKnife.bind(this);
         initToolbar();
         File file = new File(header);
-        Picasso.with(this).load(file).into(headerBT);
+        Picasso.with(this).load(file).resize(48,48).into(headerBT);
         userNameTV.setText(userName);
         nickNameTV.setText(nickName);
         emailTV.setText(email);
@@ -135,6 +135,7 @@ public class ActivityProfile extends AppCompatActivity {
         sex = sharedPreferences.getString("USER_SEX", "null");
         password = sharedPreferences.getString("USER_PW", "null");
         header = sharedPreferences.getString("USER_HEADER", "null");
+        Log.i("HEADER",header);
 
     }
 
@@ -186,7 +187,9 @@ public class ActivityProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final ProgressDialog progressDialog  = ProgressDialog.show(ActivityProfile.this,"","正在修改中，请稍后",false);
-                Call<IntResponse> call = GrowthLogApi.getInstance().updateUser(userName, password, nickName, email, sex, birth);
+                Log.i("picHead",header);
+                Call<IntResponse> call = GrowthLogApi.getInstance().updateUser(userNameTV.getText().toString(), password, nickNameTV.getText().toString(),
+                        emailTV.getText().toString(), sexTV.getText().toString(), birthTV.getText().toString(),header);
                 call.enqueue(new Callback<IntResponse>() {
                     @Override
                     public void onResponse(Call<IntResponse> call, Response<IntResponse> response) {
