@@ -4,10 +4,13 @@ import android.provider.SyncStateContract;
 
 import com.example.xueyuanzhang.growthlog.model.IntResponse;
 import com.example.xueyuanzhang.growthlog.model.QUser;
+import com.example.xueyuanzhang.growthlog.model.QZone;
 import com.example.xueyuanzhang.growthlog.model.SinaToken;
 import com.example.xueyuanzhang.growthlog.model.WeiboEntity;
+import com.example.xueyuanzhang.growthlog.model.ZoneList;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.RequestBody;
@@ -56,5 +59,8 @@ public interface GrowthLogService {
                                  @Query("user.birth") String birth,@Query("user.avatar") String header);
 
     @GET("addZoneAction")
-    Call<IntResponse> addZone(@Query("groupName") String groupName, @Query("createrID") Integer createrID);
+    Call<IntResponse> addZone(@Query("zone.zoneName") String zoneName, @Query("zone.createrID") Integer createrID);
+
+    @GET("searchZoneAction")
+    Call<List<QZone>> getZone(@Query("userID") int userID);
 }
