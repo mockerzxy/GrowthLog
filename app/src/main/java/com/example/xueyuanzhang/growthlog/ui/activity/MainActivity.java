@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -43,6 +44,9 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -80,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i("RRV", Environment.getExternalStorageDirectory().toString());
         SharedPreferences pref = getSharedPreferences("Account", MODE_PRIVATE);
         int id = pref.getInt("USER_ID", 0);
         if (id == 0) {
@@ -88,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             setContentView(R.layout.activity_main);
             initView();
-            dbHelper = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 2);
+            dbHelper = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 4);
             queryAllData(dbHelper.getReadableDatabase());
 
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -321,6 +326,8 @@ public class MainActivity extends AppCompatActivity {
             record.setText(cursor.getString(1));
             record.setPicList(PicPathUtil.split(cursor.getString(2)));
             record.setTime(cursor.getString(3));
+            record.setVideoPath(cursor.getString(4));
+            record.setSoundPath(cursor.getString(5));
             if (parentList.size() == 0) {
                 TimeEntity timeEntity = new TimeEntity();
                 timeEntity.setTime(cursor.getString(3));
@@ -421,10 +428,25 @@ public class MainActivity extends AppCompatActivity {
         SearchUtil searchUtil = new SearchUtil();
         double[] score = searchUtil.retrieval(target,textList);
         parentList.clear();
-        for(int i=0;i<score.length;i++){
-            if(score[i]!=0){
+        for(int i=0;i<score.length;i++) {
+            if (score[i] != 0) {
                 parentList.add(recordList.get(i));
+                parentList.get(parentList.size()-1).score = score[i];
             }
+        }
+
+        for(ListEntry listEntry:parentList){
+            Log.i("parent:",String.valueOf(listEntry.score));
+        }
+        Comparator comparator = Collections.reverseOrder();
+        Collections.sort(parentList,comparator);
+        for(ListEntry listEntry:parentList){
+            Log.i("parent-sort:",String.valueOf(listEntry.score));
+        }
+
+
+        for(double s:score){
+            System.out.println("**SS:"+s);
         }
     }
 

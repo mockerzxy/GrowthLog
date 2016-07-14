@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.GridLayout;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.xueyuanzhang.growthlog.R;
 import com.example.xueyuanzhang.growthlog.model.Record;
+import com.example.xueyuanzhang.growthlog.util.Export;
 import com.example.xueyuanzhang.growthlog.util.LocalDataBaseHelper;
 import com.example.xueyuanzhang.growthlog.util.PicPathUtil;
 import com.squareup.picasso.Picasso;
@@ -57,7 +59,7 @@ public class ActivityDetail extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        dbHelper = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 2);
+        dbHelper = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 4);
         int id = getIntent().getIntExtra("diary_id", -1);
         Log.e("ERROR_ID", id + "");
         if (id != -1) {
@@ -108,6 +110,14 @@ public class ActivityDetail extends AppCompatActivity {
         });
         toolbar.setTitle("日志详情");
         toolbar.setTitleTextColor(getResources().getColor(R.color.lightBlack));
+        toolbar.inflateMenu(R.menu.menu_detail);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Export.createImage(textView.getText().toString());
+                return false;
+            }
+        });
     }
 
     private void QueryData(SQLiteDatabase db, int id) {

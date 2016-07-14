@@ -55,4 +55,7 @@ public interface GrowthLogService {
                                  @Query("user.nickName") String nickName, @Query("user.mail") String mail, @Query("user.sex") String sex,
                                  @Query("user.birth") String birth,@Query("user.avatar") String header);
 
+    @GET("findPasswordAction")
+    Call<IntResponse> getPassword(@Query("user.userName") String userName);
+
 }

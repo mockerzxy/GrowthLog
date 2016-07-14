@@ -8,8 +8,8 @@ import java.util.List;
  */
 public class SearchUtil {
     public static final int Max_text_length = 10;
-    public static final int Max_diary_length = 50;
-    public static final int Max_diary_count = 6;
+    public static final int Max_diary_length = 100;
+    public static final int Max_diary_count = 10;
     private String diary[] = new String[Max_diary_count];//»’÷æƒ⁄»›
     private String result[] = new String[Max_diary_count];//»’÷æ≤È’“Ω·π˚
     private double score[] = new double[Max_diary_count];//»’÷æ∆•≈‰∂»
@@ -19,7 +19,7 @@ public class SearchUtil {
     private int[][] vector_diary = new int[Max_diary_count][Max_text_length];//»’º«Œƒ±æ◊÷∑˚◊÷∆µ
     private String text;//ƒø±ÍŒƒ±æ
     private int vector_text[] = new int[Max_text_length];//ƒø±ÍŒƒ±æ◊÷∑˚◊÷∆µ
-    private int[][][] coord_diary = new int[Max_diary_count][Max_text_length][Max_diary_length];//500»’º«◊Ó¥Û≥§∂»,10◊Ó¥Û∆•≈‰◊÷∑˚¥Æ≥§∂»
+  //  private int[][][] coord_diary = new int[Max_diary_count][Max_text_length][Max_diary_length];//500»’º«◊Ó¥Û≥§∂»,10◊Ó¥Û∆•≈‰◊÷∑˚¥Æ≥§∂»
     private int[][] arise = new int[Max_diary_count][Max_diary_length];
     private int diary_count = 0;
     private List<String> coord = new ArrayList<String>();
@@ -65,13 +65,21 @@ public class SearchUtil {
             for (int m = 0; m < diary.length; m++) {
                 for (int n = 0; n < diary[m].length(); n++) {
                     if (diary[m].charAt(n) == t) {
-                        coord_diary[m][i][n] = 1;
+                       // coord_diary[m][i][n] = 1;
                         vector_diary[m][i]++;
                         match[m]++;
                         arise[m][n] = i + 1;
                     }
                 }
             }
+        }
+        for(int i=0;i<diary.length;i++){
+            score[i]=0;
+
+        }
+        for(int i=0;i<diary.length;i++){
+            score[i]=svm(i);
+
         }
     }
 
@@ -104,7 +112,7 @@ public class SearchUtil {
                 }
             }
         }
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < diary_path.length; i++) {
             diary_path[i] = -1;
         }
         for (int i = 0; i < coord.size(); i++) {
@@ -142,7 +150,12 @@ public class SearchUtil {
         vector1 = Math.sqrt(vector1);
         vector2 = Math.sqrt(vector2);
         svm = s / (vector1 * vector2);
-        return svm;
+        if(svm>0){
+            return svm;
+        }
+        else {
+            return 0;
+        }
     }
 
     public void sort() {
@@ -181,8 +194,8 @@ public class SearchUtil {
         this.text = text;
         this.diary = diary;
         participle();
-        critical_path();
-        sort();
+   //     critical_path();
+     //   sort();
         return score;
     }
 

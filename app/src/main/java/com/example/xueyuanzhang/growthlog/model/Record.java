@@ -11,6 +11,24 @@ public class Record extends ListEntry{
     private String text;
     private List<String> picList = new ArrayList<>();
     private String time;
+    private String videoPath;
+    private String soundPath;
+
+    public String getSoundPath() {
+        return soundPath;
+    }
+
+    public void setSoundPath(String soundPath) {
+        this.soundPath = soundPath;
+    }
+
+    public String getVideoPath() {
+        return videoPath;
+    }
+
+    public void setVideoPath(String videoPath) {
+        this.videoPath = videoPath;
+    }
 
     public String getTime() {
         return time;
@@ -43,4 +61,6 @@ public class Record extends ListEntry{
     public void setPicList(List<String> picList) {
         this.picList = picList;
     }
+
+
 }

@@ -112,6 +112,23 @@
                 android:inflatedId="@+id/stubInflateId3"
                 android:layout="@layout/stub_imagenum_type3" />
 
+            <VideoView
+                android:id="@+id/video_view"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"/>
+
+            <ImageButton
+                android:id="@+id/play_voice"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end"
+                android:background="?attr/selectableItemBackground"
+                android:visibility="gone"
+                android:scaleType="center"
+                android:src="@drawable/ic_play_circle_outline_black_24dp"/>
+
 
         </LinearLayout>
     </com.daimajia.swipe.SwipeLayout>

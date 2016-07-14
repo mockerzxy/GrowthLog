@@ -1,6 +1,7 @@
 package com.example.xueyuanzhang.growthlog.ui.adapter;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.example.xueyuanzhang.growthlog.R;
@@ -53,8 +55,8 @@ public class RecordListAdapter extends RecyclerView.Adapter {
         void onShare(int id);
     }
 
-    public interface OnClickImageListener{
-        void onClick(int position,List<String> picList);
+    public interface OnClickImageListener {
+        void onClick(int position, List<String> picList);
     }
 
     public RecordListAdapter(List<ListEntry> list, Context context) {
@@ -103,6 +105,10 @@ public class RecordListAdapter extends RecyclerView.Adapter {
         LinearLayout surfaceView;
         @BindView(R.id.create_time)
         TextView createTime;
+        @BindView(R.id.video_view)
+        VideoView videoView;
+        @BindView(R.id.play_voice)
+        ImageButton playButton;
         View contentView;
         private int position;
         private int id;
@@ -176,18 +182,18 @@ public class RecordListAdapter extends RecyclerView.Adapter {
             timeViewHolder.timeView.setText(TimeUtil.formatTimeInRough(timeEntity.getTime()));
         } else if (holder instanceof LogViewHolder) {
             LogViewHolder viewHolder = (LogViewHolder) holder;
-            Record record = (Record) list.get(position);
+            final Record record = (Record) list.get(position);
             viewHolder.id = record.getId();
             initSwipeLayout(viewHolder.swipeLayout, viewHolder.bottomWrapper);
             viewHolder.createTime.setText(TimeUtil.formatTimeInDetail(record.getTime()));
-            if (record.getText().equals("")) {
+            if (record.getText()==null||record.getText().equals("")) {
                 viewHolder.textView.setVisibility(View.GONE);
             } else {
                 viewHolder.textView.setVisibility(View.VISIBLE);
 
                 viewHolder.textView.setText(restrictWordCount(record.getText()));
             }
-            if (!record.getPicList().get(0).equals("")) {
+            if (record.getPicList()!=null&&!record.getPicList().get(0).equals("")) {
                 if (record.getPicList().size() == 1) {
                     hideViewHolder(viewHolder, 2);
                     hideViewHolder(viewHolder, 3);
@@ -206,6 +212,33 @@ public class RecordListAdapter extends RecyclerView.Adapter {
                 hideViewHolder(viewHolder, 1);
                 hideViewHolder(viewHolder, 2);
                 hideViewHolder(viewHolder, 3);
+            }
+            if (record.getVideoPath() != null&&(!record.getVideoPath().equals(""))) {
+                viewHolder.videoView.setVisibility(View.VISIBLE);
+                viewHolder.videoView.setMediaController(new android.widget.MediaController(context));
+                viewHolder.videoView.setVideoPath(record.getVideoPath());
+                viewHolder.videoView.start();
+            }else {
+                viewHolder.videoView.setVisibility(View.GONE);
+            }
+            if (record.getSoundPath() != null&&(!record.getSoundPath().equals(""))) {
+                viewHolder.playButton.setVisibility(View.VISIBLE);
+                viewHolder.playButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            MediaPlayer player = new MediaPlayer();
+                            player.setDataSource(record.getSoundPath());
+                            player.prepare();
+                            player.start();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+            }
+            else {
+                viewHolder.playButton.setVisibility(View.GONE);
             }
         }
     }
@@ -248,8 +281,8 @@ public class RecordListAdapter extends RecyclerView.Adapter {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(onClickImageListener!=null){
-                    onClickImageListener.onClick(0,record.getPicList());
+                if (onClickImageListener != null) {
+                    onClickImageListener.onClick(0, record.getPicList());
                 }
             }
         });
@@ -275,8 +308,8 @@ public class RecordListAdapter extends RecyclerView.Adapter {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(onClickImageListener!=null){
-                        onClickImageListener.onClick(picPosition,record.getPicList());
+                    if (onClickImageListener != null) {
+                        onClickImageListener.onClick(picPosition, record.getPicList());
                     }
                 }
             });
@@ -304,8 +337,8 @@ public class RecordListAdapter extends RecyclerView.Adapter {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(onClickImageListener!=null){
-                        onClickImageListener.onClick(picPosition,record.getPicList());
+                    if (onClickImageListener != null) {
+                        onClickImageListener.onClick(picPosition, record.getPicList());
                     }
                 }
             });
@@ -325,7 +358,7 @@ public class RecordListAdapter extends RecyclerView.Adapter {
 
     private String restrictWordCount(String text) {
         if (text.length() > 50) {
-            String str = text.substring(0,50) + "...";
+            String str = text.substring(0, 50) + "...";
             return str;
         } else {
             return text;

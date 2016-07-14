@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.example.xueyuanzhang.growthlog.R;
 import com.example.xueyuanzhang.growthlog.model.Record;
@@ -48,6 +50,8 @@ import butterknife.ButterKnife;
 public class ActivityEdit extends AppCompatActivity {
     public static final int SELECT_PIC = 1;
     public static final int TAKE_PIC = 2;
+    public static final int SELECT_VED = 3;
+    public static final int TAKE_VOI = 4;
     private List<String> picPath = new ArrayList<>();
 
     @BindView(R.id.editText)
@@ -62,19 +66,29 @@ public class ActivityEdit extends AppCompatActivity {
     GridLayout imageViewHolder;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.video_view)
+    VideoView videoView;
+    @BindView(R.id.selectVideo)
+    ImageButton selectVideo;
+    @BindView(R.id.takeVoice)
+    ImageButton takeVoice;
+    @BindView(R.id.play_voice)
+    ImageButton play_voice;
 
     private List<ImageView> imageViewList = new ArrayList<>();
     private LocalDataBaseHelper dbHelper;
     private Record record;
     private int ifModify;
     private String capturePath;
+    private String videoPath;
+    private String soundPath;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
         initView();
-        dbHelper = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 2);
+        dbHelper = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 4);
         relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,18 +112,36 @@ public class ActivityEdit extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                String path = Environment.getExternalStorageDirectory().toString()+"/photoForGrowthLog";
+                String path = Environment.getExternalStorageDirectory().toString() + "/photoForGrowthLog";
                 File path1 = new File(path);
-                if(!path1.exists()){
+                if (!path1.exists()) {
                     path1.mkdirs();
                 }
-                File file = new File(path1,System.currentTimeMillis()+".jpg");
+                File file = new File(path1, System.currentTimeMillis() + ".jpg");
                 capturePath = file.getPath();
-                Log.i("CAP",capturePath);
-                Uri uri  = Uri.fromFile(file);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT,uri);
+                Log.i("CAP", capturePath);
+                Uri uri = Uri.fromFile(file);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                 intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent, TAKE_PIC);
+            }
+        });
+
+        selectVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("video/*");
+                intent.setAction(intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent, SELECT_VED);
+            }
+        });
+
+        takeVoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+                startActivityForResult(intent, TAKE_VOI);
             }
         });
 
@@ -118,18 +150,19 @@ public class ActivityEdit extends AppCompatActivity {
     private void initView() {
         ButterKnife.bind(this);
         initToolbar();
-        ifModify = getIntent().getIntExtra("ID",0);
-        if(ifModify!=0){
+        ifModify = getIntent().getIntExtra("ID", 0);
+        if (ifModify != 0) {
             initModifyView();
         }
     }
-    private void initModifyView(){
+
+    private void initModifyView() {
         record = new Record();
-        record.setId(getIntent().getIntExtra("ID",0));
-        if(getIntent().getStringExtra("TEXT")!=null){
+        record.setId(getIntent().getIntExtra("ID", 0));
+        if (getIntent().getStringExtra("TEXT") != null) {
             record.setText(getIntent().getStringExtra("TEXT"));
         }
-        if(getIntent().getStringArrayListExtra("PIC_LIST")!=null){
+        if (getIntent().getStringArrayListExtra("PIC_LIST") != null) {
             record.setPicList(getIntent().getStringArrayListExtra("PIC_LIST"));
         }
         editText.setText(record.getText());
@@ -138,14 +171,13 @@ public class ActivityEdit extends AppCompatActivity {
 
     }
 
-    private void addImageToHolder(boolean ifAddOne){
-        for(int i=0;i<picPath.size();i++) {
+    private void addImageToHolder(boolean ifAddOne) {
+        for (int i = 0; i < picPath.size(); i++) {
             ImageView imageView = (ImageView) LayoutInflater.from(this).inflate(R.layout.view_imageitem, imageViewHolder, false);
             File file;
-            if(ifAddOne){
-                file  = new File(picPath.get(picPath.size()-1));
-            }
-            else {
+            if (ifAddOne) {
+                file = new File(picPath.get(picPath.size() - 1));
+            } else {
                 file = new File(picPath.get(i));
             }
             Picasso.with(this).load(file).resize(300, 300).centerCrop().into(imageView);
@@ -167,7 +199,7 @@ public class ActivityEdit extends AppCompatActivity {
                     return true;
                 }
             });
-            if(ifAddOne){
+            if (ifAddOne) {
                 break;
             }
         }
@@ -190,10 +222,10 @@ public class ActivityEdit extends AppCompatActivity {
                 if (id == R.id.send) {
                     Log.i("merge", mergePicPath());
                     ProgressDialog dialog = ProgressDialog.show(ActivityEdit.this, "", "正在记录，请稍后", true);
-                    if(ifModify==0) {
-                        insertData(dbHelper.getReadableDatabase(), editText.getText().toString(), mergePicPath(), getTime());
-                    }else{
-                        modifyData(dbHelper.getReadableDatabase(),record.getId(),editText.getText().toString(),mergePicPath());
+                    if (ifModify == 0) {
+                        insertData(dbHelper.getReadableDatabase(), editText.getText().toString(), mergePicPath(), getTime(), videoPath, soundPath);
+                    } else {
+                        modifyData(dbHelper.getReadableDatabase(), record.getId(), editText.getText().toString(), mergePicPath(), videoPath, soundPath);
                     }
                     dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "记录成功", Toast.LENGTH_SHORT).show();
@@ -209,7 +241,13 @@ public class ActivityEdit extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            doPhoto(requestCode, data);
+            if (requestCode == SELECT_VED) {
+                doVideo(requestCode, data);
+            } else if(requestCode == TAKE_VOI){
+                doVoice(requestCode,data);
+            }else {
+                doPhoto(requestCode, data);
+            }
         }
     }
 
@@ -263,17 +301,71 @@ public class ActivityEdit extends AppCompatActivity {
         }
     }
 
+    private void doVideo(int requestCode, Intent data) {
+
+
+        Uri selectedVideo = data.getData();
+        String[] filePathColumn = {MediaStore.Video.Media.DATA};
+
+        Cursor cursor = getContentResolver().query(selectedVideo,
+                filePathColumn, null, null, null);
+        cursor.moveToFirst();
+
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        videoPath = cursor.getString(columnIndex);
+        cursor.close();
+        videoView.setVisibility(View.VISIBLE);
+        videoView.setMediaController(new android.widget.MediaController(this));
+        videoView.setVideoURI(selectedVideo);
+        videoView.start();
+        videoView.requestFocus();
+    }
+
+    private void doVoice(int requestCode, Intent data) {
+        try {
+            Uri uri = data.getData();
+            soundPath = getAudioFilePathFromUri(uri);
+            play_voice.setVisibility(View.VISIBLE);
+            play_voice.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        MediaPlayer player = new MediaPlayer();
+                        player.setDataSource(soundPath);
+                        player.prepare();
+                        player.start();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
+
+                }
+            });
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private String getAudioFilePathFromUri(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int index = cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA);
+        return cursor.getString(index);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
 
-    private void insertData(SQLiteDatabase db, String text, String imagePath, String timeStamp) {
-        db.execSQL("insert into GrowthLog values(null , ? , ? , ?)", new String[]{text, imagePath,timeStamp});
+    private void insertData(SQLiteDatabase db, String text, String imagePath, String timeStamp, String videoPath, String soundPath) {
+        db.execSQL("insert into GrowthLog values(null , ? , ? , ? , ? , ?)", new String[]{text, imagePath, timeStamp, videoPath, soundPath});
     }
 
-    private void modifyData(SQLiteDatabase db,int id,String text,String imagePath){
-        db.execSQL("update GrowthLog set text = '"+text+"', image = '"+imagePath+"' where _id = "+id);
+    private void modifyData(SQLiteDatabase db, int id, String text, String imagePath, String videoPath, String soundPath) {
+        db.execSQL("update GrowthLog set text = '" + text + "', image = '" + imagePath + "', video = '" + videoPath + "', sound = '" + soundPath + "' where _id = " + id);
     }
 
     private String mergePicPath() {
@@ -297,9 +389,9 @@ public class ActivityEdit extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(capturePath!=null){
+        if (capturePath != null) {
             String path = capturePath;
-            outState.putString("capturePath",path);
+            outState.putString("capturePath", path);
 //            ArrayList<String> picPathList= (ArrayList<String>)picPath;
 //            outState.putStringArrayList("picPathList",picPathList);
 
@@ -309,9 +401,9 @@ public class ActivityEdit extends AppCompatActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if(savedInstanceState.getString("capturePath")!=null){
+        if (savedInstanceState.getString("capturePath") != null) {
             picPath.add(savedInstanceState.getString("capturePath"));
-            Log.i("imCount",imageViewList.size()+"");
+            Log.i("imCount", imageViewList.size() + "");
             addImageToHolder(true);
         }
     }
