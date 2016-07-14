@@ -14,6 +14,7 @@ public class SearchUtil {
     private String result[] = new String[Max_diary_count];//»’÷æ≤È’“Ω·π˚
     private double score[] = new double[Max_diary_count];//»’÷æ∆•≈‰∂»
     private int position[][] = new int[Max_diary_count][Max_diary_length];
+    private int pos[][]=new int [Max_diary_count][Max_text_length];
     private int match[] = new int[Max_diary_count];
 
     private int[][] vector_diary = new int[Max_diary_count][Max_text_length];//»’º«Œƒ±æ◊÷∑˚◊÷∆µ
@@ -77,9 +78,60 @@ public class SearchUtil {
             score[i]=0;
 
         }
+        for(int x=0;x<Max_diary_count;x++){
+            for(int y=0;y<Max_text_length;y++){
+                pos[x][y]=-1;
+            }
+        }
         for(int i=0;i<diary.length;i++){
-            score[i]=svm(i);
-
+            for(int j=0;j<text.length();j++){
+                for(int m=0;m<Max_diary_length;m++){
+                    int l=j+1;
+                    if(arise[i][m]==l)
+                    {
+                        if(pos[i][j]==-1){
+                            pos[i][j]=m;
+                        }
+                    }
+                }
+            }
+        }
+        for(int i=0;i<diary.length;i++){
+            for(int j=0;j<text.length();j++){
+                if(j<text.length()-1){
+                    if(pos[i][j+1]>pos[i][j]){
+                        rank[i][0]++;
+                    }
+                }
+            }
+        }
+        int []max1=new int[Max_diary_count];
+        int []min1=new int[Max_diary_count];
+        for(int j=0;j<diary.length;j++){
+            for(int i=0;i<text.length();i++){
+                if(pos[j][i]!=0){
+                    min1[j]=pos[j][i];
+                    break;
+                }
+            }
+            for(int i=text.length()-1;i>=0;i--){
+                if(pos[j][i]!=0){
+                    max1[j]=pos[j][i];
+                    break;
+                }
+            }
+        }
+        for(int i=0;i<diary.length;i++){
+            rank[i][1]=max1[i]-min1[i];
+        }
+        for(int i = 0;i<diary.length;i++){
+            score[i]=0;
+        }
+        for(int i = 0;i<diary.length;i++){
+            rank[i][2]=svm(i);
+        }
+        for(int i = 0;i<diary.length;i++){
+            score[i]=rank[i][0]*100-rank[i][1]+rank[i][2];
         }
     }
 

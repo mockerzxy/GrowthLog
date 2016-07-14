@@ -25,18 +25,21 @@ package com.example.xueyuanzhang.growthlog.util;
 
 
 public class Export {
-    private static final int height=600;
-    private static final int width=800;
+    private static final int height=200;
+    private static final int width=300;
     private static Bitmap bitmap;
     public static void createImage(String text){
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setColor(Color.BLACK);
+        p.setColor(Color.BLUE);
+        p.setTextSize(20f);
+
         bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
         canvas.drawText(text,0,20,p);
         canvas.drawBitmap(bitmap,0,0,p);
 
-            saveBitmap("123");
+            saveBitmap("ZZX.png");
 
 
 
