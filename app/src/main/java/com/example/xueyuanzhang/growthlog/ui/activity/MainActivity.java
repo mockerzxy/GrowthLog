@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     private void initDrawer() {
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("个人资料").withIcon(R.drawable.ic_person_black_24dp).withTag("profile").withTextColor(Color.BLACK).withSelectable(false);
         PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("修改密码").withIcon(R.drawable.ic_build_black_24dp).withTag("modifyPW").withTextColor(Color.BLACK).withSelectable(false);
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("退出登录").withIcon(R.drawable.ic_clear_black_24dp).withTag("quit").withTextColor(Color.BLACK).withSelectable(false);
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("退出登录").withIcon(R.drawable.ic_power_settings_new_black_24dp).withTag("quit").withTextColor(Color.BLACK).withSelectable(false);
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)

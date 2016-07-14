@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.xueyuanzhang.growthlog.R;
+import com.example.xueyuanzhang.growthlog.model.QZone;
 import com.example.xueyuanzhang.growthlog.model.Zone;
 
 import java.util.List;
@@ -19,9 +20,9 @@ import butterknife.ButterKnife;
  * Created by xueyuanzhang on 16/7/11.
  */
 public class ZoneListAdapter extends RecyclerView.Adapter{
-    private List<Zone> list;
+    private List<QZone> list;
     private Context context;
-    public ZoneListAdapter(List<Zone> list, Context context) {
+    public ZoneListAdapter(List<QZone> list, Context context) {
         this.list = list;
         this.context = context;
     }
