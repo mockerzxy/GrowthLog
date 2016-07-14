@@ -134,12 +134,12 @@ public class ActivityZone extends AppCompatActivity{
                                         switch (resp.getResult()) {
                                             case 1:
                                                 Toast.makeText(getApplicationContext(), "创建成功！", Toast.LENGTH_SHORT).show();
+                                                ActivityZone.super.recreate();
                                                 break;
                                             case 0:
                                                 Toast.makeText(getApplicationContext(), "创建失败！", Toast.LENGTH_SHORT).show();
                                                 break;
                                         }
-                                        //ActivityZone.super.recreate();
                                     }
                                 }
 
