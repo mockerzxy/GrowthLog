@@ -21,8 +21,6 @@ import com.example.xueyuanzhang.growthlog.R;
 import com.example.xueyuanzhang.growthlog.api.GrowthLogApi;
 import com.example.xueyuanzhang.growthlog.model.IntResponse;
 import com.example.xueyuanzhang.growthlog.model.QZone;
-import com.example.xueyuanzhang.growthlog.model.Zone;
-import com.example.xueyuanzhang.growthlog.model.ZoneList;
 import com.example.xueyuanzhang.growthlog.ui.adapter.ZoneListAdapter;
 
 import java.util.ArrayList;

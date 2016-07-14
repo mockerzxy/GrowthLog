@@ -1,15 +1,11 @@
 package com.example.xueyuanzhang.growthlog.api;
 
-import android.provider.SyncStateContract;
-
 import com.example.xueyuanzhang.growthlog.model.IntResponse;
 import com.example.xueyuanzhang.growthlog.model.QUser;
 import com.example.xueyuanzhang.growthlog.model.QZone;
 import com.example.xueyuanzhang.growthlog.model.SinaToken;
 import com.example.xueyuanzhang.growthlog.model.WeiboEntity;
-import com.example.xueyuanzhang.growthlog.model.ZoneList;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +15,8 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Query;
 
