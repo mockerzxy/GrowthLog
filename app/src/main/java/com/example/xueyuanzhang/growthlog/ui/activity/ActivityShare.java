@@ -108,7 +108,7 @@ public class ActivityShare extends AppCompatActivity {
     }
 
     private void queryDataFromDB() {
-        LocalDataBaseHelper ldb = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 2);
+        LocalDataBaseHelper ldb = new LocalDataBaseHelper(this, "GrowthLogDB.db3", 4);
         SQLiteDatabase db = ldb.getReadableDatabase();
 
         Cursor cursor = db.rawQuery("select * from GrowthLog where _id = " + recordId, null);

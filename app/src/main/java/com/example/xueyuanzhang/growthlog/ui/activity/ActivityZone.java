@@ -20,10 +20,14 @@ import android.widget.Toast;
 import com.example.xueyuanzhang.growthlog.R;
 import com.example.xueyuanzhang.growthlog.api.GrowthLogApi;
 import com.example.xueyuanzhang.growthlog.model.IntResponse;
+import com.example.xueyuanzhang.growthlog.model.ListEntry;
+import com.example.xueyuanzhang.growthlog.model.MyDiary;
+import com.example.xueyuanzhang.growthlog.model.OtherDiary;
 import com.example.xueyuanzhang.growthlog.model.QZone;
 import com.example.xueyuanzhang.growthlog.ui.adapter.ZoneListAdapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -44,22 +48,34 @@ public class ActivityZone extends AppCompatActivity{
     FloatingActionButton addFab;
 
     private ZoneListAdapter adapter;
-    private List<QZone> zoneList;
+    private List<ListEntry> zoneList;
     private int userID;
+    private String userName;
+    private String userHeader;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zone);
-        initView();
         getDataFromSPR();
-        getData();
+        initView();
     }
 
     private void initView(){
         ButterKnife.bind(this);
         initToolbar();
         initRecyclerView();
-        getData();
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MyDiary myDiary = new MyDiary();
+                myDiary.name = userName;
+                myDiary.header = userHeader;
+                Calendar c = Calendar.getInstance();
+                myDiary.time=c.getTime().toString();
+                zoneList.add(myDiary);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
     private void initToolbar(){
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
@@ -75,6 +91,7 @@ public class ActivityZone extends AppCompatActivity{
 
     private void initRecyclerView(){
         zoneList = new ArrayList<>();
+        initData();
         adapter = new ZoneListAdapter(zoneList,this);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager lm = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
@@ -82,89 +99,36 @@ public class ActivityZone extends AppCompatActivity{
         recyclerView.setAdapter(adapter);
     }
 
-    private void getData(){
-        //get data from the server;
-        Call<List<QZone>> call = GrowthLogApi.getInstance().getZone(userID);
-        call.enqueue(new Callback<List<QZone>>() {
-            @Override
-            public void onResponse(Call<List<QZone>> call, Response<List<QZone>> response) {
-                if (response.body() == null) {
-                    Toast.makeText(getApplicationContext(), "null", Toast.LENGTH_SHORT).show();
-                } else {
-                    zoneList = response.body();
-                }
-            }
 
-            @Override
-            public void onFailure(Call<List<QZone>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "failure connect", Toast.LENGTH_SHORT).show();
-                t.printStackTrace();
-            }
-        });
 
-    }
 
-    public void addZone(View view){
-        LinearLayout inputName = (LinearLayout)getLayoutInflater().inflate(R.layout.activity_addzone,null);
-        final EditText editGroupName = (EditText)inputName.findViewById(R.id.edit_zoneName);
-        new AlertDialog.Builder(this)
-                .setIcon(R.drawable.ic_insert_emoticon_black_24dp)
-                .setTitle("请输入您的群名")
-                .setView(inputName)
-                .setPositiveButton("建立", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String groupName = editGroupName.getText().toString();
-                        if(groupName.isEmpty()){
-                            Toast.makeText(getApplicationContext(), "组名不可为空！", Toast.LENGTH_SHORT).show();
-                        }else{
-                            final ProgressDialog progressDialog = ProgressDialog.show(ActivityZone.this, "", "创建中", true);
-                            Log.d("ACC",groupName);
-                            Log.d("ACC",userID+"");
-                            Call<IntResponse> call = GrowthLogApi.getInstance().addZone(groupName,userID);
-                            call.enqueue(new Callback<IntResponse>() {
-                                @Override
-                                public void onResponse(Call<IntResponse> call, Response<IntResponse> response) {
-                                    progressDialog.dismiss();
-                                    if (response.body() == null) {
-                                        Toast.makeText(getApplicationContext(), "null", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        IntResponse resp = response.body();
-                                        Log.i("ACC", resp.getResult() + "");
-                                        switch (resp.getResult()) {
-                                            case 1:
-                                                Toast.makeText(getApplicationContext(), "创建成功！", Toast.LENGTH_SHORT).show();
-                                                ActivityZone.super.recreate();
-                                                break;
-                                            case 0:
-                                                Toast.makeText(getApplicationContext(), "创建失败！", Toast.LENGTH_SHORT).show();
-                                                break;
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<IntResponse> call, Throwable t) {
-                                    progressDialog.dismiss();
-                                    Toast.makeText(getApplicationContext(), "failure connect", Toast.LENGTH_SHORT).show();
-                                    t.printStackTrace();
-                                }
-                            });
-                        }
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .create()
-                .show();
-    }
 
     private void getDataFromSPR(){
         SharedPreferences pref = getSharedPreferences("Account", MODE_PRIVATE);
         userID = pref.getInt("USER_ID",0);
+        userName = pref.getString("USER_NICK_NAME","null");
+        userHeader = pref.getString("USER_HEADER","null");
+
+    }
+
+    private void initData(){
+        MyDiary myDiary1 = new MyDiary();
+        myDiary1.time = "2016-7-14";
+        myDiary1.name = userName;
+        myDiary1.header = userHeader;
+        OtherDiary other1 = new OtherDiary();
+        other1.time = "2016-7-13";
+        other1.name = "Hawker";
+        MyDiary myDiary2 = new MyDiary();
+        myDiary2.time = "2016-7-12";
+        myDiary2.name = userName;
+        myDiary2.header = userHeader;
+        OtherDiary other2 = new OtherDiary();
+        other2.time = "2016-7-11";
+        other2.name = "Joker";
+        zoneList.add(myDiary1);
+        zoneList.add(other1);
+        zoneList.add(myDiary2);
+        zoneList.add(other2);
     }
 }

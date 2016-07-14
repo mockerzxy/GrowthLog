@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="4dp"
     android:layout_marginEnd="16dp"
-    android:layout_marginStart="16dp"
+    android:layout_marginStart="90dp"
     android:layout_marginTop="4dp"
     android:clickable="true"
     android:foreground="?attr/selectableItemBackground"
@@ -28,7 +28,7 @@
                 android:id="@+id/header"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                tools:src="@drawable/header" />
+                android:src="@drawable/header" />
 
             <TextView
                 android:id="@+id/name"
@@ -61,12 +61,12 @@
                 android:textSize="14sp"
                 tools:text="18:00" />
 
+
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
             <TextView
                 android:id="@+id/num"
                 android:layout_width="wrap_content"
@@ -87,9 +87,9 @@
                 android:src="@drawable/ic_thumb_up_black_24dp" />
 
 
+
         </RelativeLayout>
     </LinearLayout>
 
 
 </android.support.v7.widget.CardView>
-
